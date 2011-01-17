@@ -19,8 +19,8 @@ which, in turn, was based on the original code by Tim Peters:
 2. `cd timsort`
 3. `make` builds all
 4. `make install` installs package
-5. `make test` runs test harness
-6. `make bench` runs benchmarks comparing timsort speed to built-in sort.Sort
+5. `make test` (optional) runs test harness
+6. `make bench` (optional) runs benchmarks comparing timsort speed to built-in sort.Sort
 
 Alternatively, you can intall using `goinstall github.com/pgmmpk/timsort`, but
 if you do this, the import statement in your programs will be `import github.com/pgmmpk/timsort` instead of just `import timsort`.
