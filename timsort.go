@@ -11,10 +11,6 @@
 //
 // http://svn.python.org/projects/python/trunk/Objects/listsort.txt
 //
-// DONE: try different values for MIN_MERGE contstant (original Tim's code used 64,
-//       while java code uses 32)
-// TODO: try replacing stackLen computation with simple constant (as in original Tim's code)
-//
 // Mike K.
 package timsort
 
@@ -22,39 +18,6 @@ import (
 	"container/vector"
 )
 
-/**
- * A stable, adaptive, iterative mergesort that requires far fewer than
- * n lg(n) comparisons when running on partially sorted arrays, while
- * offering performance comparable to a traditional mergesort when run
- * on random arrays.  Like all proper mergesorts, this sort is stable and
- * runs O(n log n) time (worst case).  In the worst case, this sort requires
- * temporary storage space for n/2 object references; in the best case,
- * it requires only a small constant amount of space.
- *
- * This implementation was adapted from Tim Peters's list sort for
- * Python, which is described in detail here:
- *
- *   http://svn.python.org/projects/python/trunk/Objects/listsort.txt
- *
- * Tim's C code may be found here:
- *
- *   http://svn.python.org/projects/python/trunk/Objects/listobject.c
- *
- * The underlying techniques are described in this paper (and may have
- * even earlier origins):
- *
- *  "Optimistic Sorting and Information Theoretic Complexity"
- *  Peter McIlroy
- *  SODA (Fourth Annual ACM-SIAM Symposium on Discrete Algorithms),
- *  pp 467-474, Austin, Texas, 25-27 January 1993.
- *
- * While the API to this class consists solely of static methods, it is
- * (privately) instantiable; a TimSort instance holds the state of an ongoing
- * sort, assuming the input array is large enough to warrant the full-blown
- * TimSort. Small arrays are sorted in place, using a binary insertion sort.
- *
- * @author Josh Bloch
- */
 const (
 	/**
 	 * This is the minimum sized sequence that will be merged.  Shorter
@@ -73,15 +36,15 @@ const (
 	 * of the minimum stack length required as a function of the length
 	 * of the array being sorted and the minimum merge sequence length.
 	 */
-	MIN_MERGE = 32
+	c_MIN_MERGE = 32
 // MK: tried higher MIN_MERGE and got slower sorting (348->375)
-//	MIN_MERGE = 64
+//	c_MIN_MERGE = 64
 
 	/**
 	 * When we get into galloping mode, we stay there until both runs win less
-	 * often than MIN_GALLOP consecutive times.
+	 * often than c_MIN_GALLOP consecutive times.
 	 */
-	MIN_GALLOP = 7
+	c_MIN_GALLOP = 7
 
 	/**
 	 * Maximum initial size of tmp array, which is used for merging.  The array
@@ -90,7 +53,7 @@ const (
 	 * Unlike Tim's original C version, we do not allocate this much storage
 	 * when sorting smaller arrays.  This change was required for performance.
 	 */
-	INITIAL_TMP_STORAGE_LENGTH = 256
+	c_INITIAL_TMP_STORAGE_LENGTH = 256
 )
 
 type LessThan func(a, b interface{}) bool
@@ -109,7 +72,7 @@ type timSortHandler struct {
 
 	/**
 	 * This controls when we get *into* galloping mode.  It is initialized
-	 * to MIN_GALLOP.  The mergeLo and mergeHi methods nudge it higher for
+	 * to c_MIN_GALLOP.  The mergeLo and mergeHi methods nudge it higher for
 	 * random data, and lower for highly structured data.
 	 */
 	minGallop int
@@ -145,13 +108,13 @@ func newTimSort(a []interface{}, c LessThan) (out *timSortHandler) {
 
 	out.a = a
 	out.c = c
-	out.minGallop = MIN_GALLOP
+	out.minGallop = c_MIN_GALLOP
 	out.stackSize = 0
 
 	// Allocate temp storage (which may be increased later if necessary)
 	len := len(a)
 
-	tmpSize := INITIAL_TMP_STORAGE_LENGTH
+	tmpSize := c_INITIAL_TMP_STORAGE_LENGTH
 	if len < 2*tmpSize {
 		tmpSize = len / 2
 	}
@@ -165,8 +128,8 @@ func newTimSort(a []interface{}, c LessThan) (out *timSortHandler) {
 	 * measured to be too expensive when sorting "mid-sized" arrays (e.g.,
 	 * 100 elements) in Java.  Therefore, we use smaller (but sufficiently
 	 * large) stack lengths for smaller arrays.  The "magic numbers" in the
-	 * computation below must be changed if MIN_MERGE is decreased.  See
-	 * the MIN_MERGE declaration above for more information.
+	 * computation below must be changed if c_MIN_MERGE is decreased.  See
+	 * the c_MIN_MERGE declaration above for more information.
 	 */
 	stackLen := 40
 	if len < 120 {
@@ -198,7 +161,7 @@ func Sort(a []interface{}, c LessThan) {
 	}
 
 	// If array is small, do a "mini-TimSort" with no merges
-	if nRemaining < MIN_MERGE {
+	if nRemaining < c_MIN_MERGE {
 		initRunLen := countRunAndMakeAscending(a, lo, hi, c)
 
 		binarySort(a, lo, hi, lo+initRunLen, c)
@@ -407,9 +370,9 @@ func reverseRange(a []interface{}, lo, hi int) {
  *
  * Roughly speaking, the computation is:
  *
- *  If n < MIN_MERGE, return n (it's too small to bother with fancy stuff).
- *  Else if n is an exact power of 2, return MIN_MERGE/2.
- *  Else return an int k, MIN_MERGE/2 <= k <= MIN_MERGE, such that n/k
+ *  If n < c_MIN_MERGE, return n (it's too small to bother with fancy stuff).
+ *  Else if n is an exact power of 2, return c_MIN_MERGE/2.
+ *  Else return an int k, c_MIN_MERGE/2 <= k <= c_MIN_MERGE, such that n/k
  *   is close to, but strictly less than, an exact power of 2.
  *
  * For the rationale, see listsort.txt.
@@ -422,7 +385,7 @@ func minRunLength(n int) int {
 		panic("n >= 0")
 	}
 	r := 0 // Becomes 1 if any 1 bits are shifted off
-	for n >= MIN_MERGE {
+	for n >= c_MIN_MERGE {
 		r |= (n & 1)
 		n >>= 1
 	}
@@ -864,7 +827,7 @@ outer:
 				break outer
 			}
 			minGallop--
-			if count1 < MIN_GALLOP && count2 < MIN_GALLOP {
+			if count1 < c_MIN_GALLOP && count2 < c_MIN_GALLOP {
 				break
 			}
 		}
@@ -1032,7 +995,7 @@ outer:
 			}
 			minGallop--
 
-			if count1 < MIN_GALLOP && count2 < MIN_GALLOP {
+			if count1 < c_MIN_GALLOP && count2 < c_MIN_GALLOP {
 				break
 			}
 		}
