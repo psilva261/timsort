@@ -26,6 +26,7 @@ if you do this, the import statement in your programs will be `import github.com
 
 	import (
 		"timsort"
+		"fmt"
 	)
 
 	type Record struct {
