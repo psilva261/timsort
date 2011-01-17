@@ -8,7 +8,7 @@ For many input types its 2-3 times faster than Go's built-in sorting.
 This implementation was derived from Java's TimSort object by Josh Bloch,
 which, in turn, was based on the original code by Tim Peters:
 
-  http://svn.python.org/projects/python/trunk/Objects/listsort.txt
+	http://svn.python.org/projects/python/trunk/Objects/listsort.txt
 
 
 ## Installation
@@ -43,9 +43,9 @@ if you do this, the import statement in your programs will be `import github.com
 
 	func main() {
 		db := make([]interface{}, 3)
-		db[0] = Record(123456789, "joe")
-		db[1] = Record(993456780, "sue")
-		db[2] = Record(345623452, "mary")
+		db[0] = Record{123456789, "joe"}
+		db[1] = Record{993456780, "sue"}
+		db[2] = Record{345623452, "mary"}
 
 		// sorts array by ssn (ascending)
 		timsort.Sort(db, BySsn)
