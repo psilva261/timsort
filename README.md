@@ -45,7 +45,7 @@ if you do this, the import statement in your programs will be `import github.com
 	func main() {
 		db := make([]interface{}, 3)
 		db[0] = Record{123456789, "joe"}
-		db[1] = Record{093456780, "sue"}
+		db[1] = Record{101765430, "sue"}
 		db[2] = Record{345623452, "mary"}
 
 		// sorts array by ssn (ascending)
