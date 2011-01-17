@@ -56,6 +56,7 @@ const (
 	c_INITIAL_TMP_STORAGE_LENGTH = 256
 )
 
+// Delegate type that sorting uses as comparator
 type LessThan func(a, b interface{}) bool
 
 type timSortHandler struct {
@@ -146,11 +147,7 @@ func newTimSort(a []interface{}, c LessThan) (out *timSortHandler) {
 	return out
 }
 
-/*
- * The next two methods (which are package private and static) constitute
- * the entire API of this class.  Each of these methods obeys the contract
- * of the public method with the same signature in java.util.Arrays.
- */
+// Sorts array using the comparator
 func Sort(a []interface{}, c LessThan) {
 	lo := 0
 	hi := len(a)
@@ -1092,15 +1089,13 @@ func rangeCheck(arrayLen, fromIndex, toIndex int) {
 	}
 }
 
-func VectorLessThan(a, b interface{}) bool {
+func vectorLessThan(a, b interface{}) bool {
 	return a.(vector.LessInterface).Less(b)
 }
 
-//
 // Convenience function - to sort vector.Vector (or an array of interface{} elements) 
 // delegating comparison to element's vector.LessInterface. This is a drop-in replacement
 // for built-in method of vector sorting.
-//
 func SortVector(a []interface{}) {
-	Sort(a, VectorLessThan)
+	Sort(a, vectorLessThan)
 }
