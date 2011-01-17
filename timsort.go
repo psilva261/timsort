@@ -1,3 +1,5 @@
+// Fast stable sort, uses external comparator.
+//
 // A stable, adaptive, iterative mergesort that requires far fewer than
 // n lg(n) comparisons when running on partially sorted arrays, while
 // offering performance comparable to a traditional mergesort when run
