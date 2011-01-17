@@ -60,8 +60,8 @@ if you do this, the import statement in your programs will be `import github.com
 ## Todo
 
 * more testing
-* benchmarking
-* /done/ try different values for MIN_MERGE contstant (original Tim's code used 64, while java code uses 32)
+* more benchmarking
+* //done// try different values for MIN_MERGE contstant (original Tim's code used 64, while java code uses 32)
 * try replacing stackLen computation with simple constant (as in original Tim's code)
 
 Mike K.
