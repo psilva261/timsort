@@ -58,7 +58,7 @@ const (
 	c_INITIAL_TMP_STORAGE_LENGTH = 256
 )
 
-// Delegate type that sorting uses as comparator
+// Delegate type that sorting uses as a comparator
 type LessThan func(a, b interface{}) bool
 
 type timSortHandler struct {
@@ -149,7 +149,7 @@ func newTimSort(a []interface{}, c LessThan) (out *timSortHandler) {
 	return out
 }
 
-// Sorts array using the comparator
+// Sorts an array using the provided comparator
 func Sort(a []interface{}, c LessThan) {
 	lo := 0
 	hi := len(a)
@@ -1068,36 +1068,13 @@ func (self *timSortHandler) ensureCapacity(minCapacity int) []interface{} {
 	return self.tmp
 }
 
-/**
- * Checks that fromIndex and toIndex are in range, and throws an
- * appropriate exception if they aren't.
- *
- * @param arrayLen the length of the array
- * @param fromIndex the index of the first element of the range
- * @param toIndex the index after the last element of the range
- * @throws IllegalArgumentException if fromIndex > toIndex
- * @throws ArrayIndexOutOfBoundsException if fromIndex < 0
- *         or toIndex > arrayLen
- */
-func rangeCheck(arrayLen, fromIndex, toIndex int) {
-	if fromIndex > toIndex {
-		panic("fromIndex > toIndex")
-	}
-	if fromIndex < 0 {
-		panic("fromIndex < 0")
-	}
-	if toIndex > arrayLen {
-		panic("toIndex > arrayLen")
-	}
-}
-
 func vectorLessThan(a, b interface{}) bool {
 	return a.(vector.LessInterface).Less(b)
 }
 
-// Convenience function - to sort vector.Vector (or an array of interface{} elements) 
-// delegating comparison to element's vector.LessInterface. This is a drop-in replacement
-// for built-in method of vector sorting.
+// Sorts an array (or vector.Vector) delegating comparison to
+// vector.LessInterface that elements are expected to implement.
+// This is a convenience function - a drop-in replacement for built-in sorting.
 func SortVector(a []interface{}) {
 	Sort(a, vectorLessThan)
 }
