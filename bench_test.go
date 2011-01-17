@@ -1,10 +1,10 @@
 package timsort
 
-import(
+import (
 	"testing"
 	"sort"
 	"rand"
-//	"fmt"
+	//	"fmt"
 	"container/vector"
 )
 
@@ -38,7 +38,7 @@ func makeVector(size int, shape string) vector.Vector {
 	var v vector.Vector
 
 	switch shape {
-	
+
 	case "xor":
 		for i := 0; i < size; i++ {
 			v.Push(&record{0xff & (i ^ 0xab), i})
@@ -60,7 +60,6 @@ func makeVector(size int, shape string) vector.Vector {
 		for i := 0; i < size; i++ {
 			v.Push(&record{rand.Int(), i})
 		}
-
 
 	default:
 		panic(shape)
@@ -126,33 +125,33 @@ func BenchmarkStandardSortRandom1K(b *testing.B) {
 }
 
 func BenchmarkTimsortXor1M(b *testing.B) {
-	benchmarkTimsort(b, 1024 * 1024, "xor")
+	benchmarkTimsort(b, 1024*1024, "xor")
 }
 
 func BenchmarkStandardSortXor1M(b *testing.B) {
-	benchmarkStandardSort(b, 1024 * 1024, "xor")
+	benchmarkStandardSort(b, 1024*1024, "xor")
 }
 
 func BenchmarkTimsortSorted1M(b *testing.B) {
-	benchmarkTimsort(b, 1024 * 1024, "sorted")
+	benchmarkTimsort(b, 1024*1024, "sorted")
 }
 
 func BenchmarkStandardSortSorted1M(b *testing.B) {
-	benchmarkStandardSort(b, 1024 * 1024, "sorted")
+	benchmarkStandardSort(b, 1024*1024, "sorted")
 }
 
 func BenchmarkTimsortRevSorted1M(b *testing.B) {
-	benchmarkTimsort(b, 1024 * 1024, "revsorted")
+	benchmarkTimsort(b, 1024*1024, "revsorted")
 }
 
 func BenchmarkStandardSortRevSorted1M(b *testing.B) {
-	benchmarkStandardSort(b, 1024 * 1024, "revsorted")
+	benchmarkStandardSort(b, 1024*1024, "revsorted")
 }
 
 func BenchmarkTimsortRandom1M(b *testing.B) {
-	benchmarkTimsort(b, 1024 * 1024, "random")
+	benchmarkTimsort(b, 1024*1024, "random")
 }
 
 func BenchmarkStandardSortRandom1M(b *testing.B) {
-	benchmarkStandardSort(b, 1024 * 1024, "random")
+	benchmarkStandardSort(b, 1024*1024, "random")
 }
