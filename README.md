@@ -3,7 +3,9 @@
 **timsort** is a Go implementation of Tim Peters's mergesort
 sorting algorithm.
 
-For many input types its 2-3 times faster than Go's built-in sorting.
+For many input types its 2-3 times faster than Go's built-in sorting. The
+main drawback of this sort method is that it is not in-place (as its is based
+on mergesort), and may put extra strain on garbage collector.
 
 This implementation was derived from Java's TimSort object by Josh Bloch,
 which, in turn, was based on the original code by Tim Peters:
@@ -13,9 +15,12 @@ which, in turn, was based on the original code by Tim Peters:
 
 ## Installation
 
-1. git clone git://github.com/pgmmpk/timsort.git
-2. cd timsort
-3. make install
+1. `git clone git://github.com/pgmmpk/timsort.git` to checkout the source
+2. `cd timsort`
+3. `make` builds all
+4. `make install` installs package
+5. `make test` runs test harness
+6. `make bench` runs benchmarks comparing timsort speed to built-in sort.Sort
 
 Alternatively, you can intall using `goinstall github.com/pgmmpk/timsort`, but
 if you do this, the import statement in your programs will be `import github.com/pgmmpk/timsort` instead of just `import timsort`.
