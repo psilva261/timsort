@@ -22,7 +22,7 @@ which, in turn, was based on the original code by Tim Peters:
 4. `make install` installs package
 
 Alternatively, you can install using `goinstall github.com/pgmmpk/timsort`, but
-if you do this, the import statement in your programs will be `import github.com/pgmmpk/timsort` instead of just `import timsort`.
+if you do this, the import statement in your programs should be `import github.com/pgmmpk/timsort` instead of just `import timsort`.
 
 
 ## Testing
@@ -48,6 +48,8 @@ See `BENCHMARKS.md` for more info and some benchmarking results.
 	package main
 
 	import (
+// depending on how timsort was installed, use the appropriate import target
+// 		"github.com/pgmmpk/timsort"
 		"timsort"
 		"fmt"
 	)
