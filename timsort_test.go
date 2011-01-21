@@ -8,14 +8,14 @@ import (
 )
 
 type val struct {
-	key, order, payload int
+	key, order int
 }
 
 func makeTestArray(size int) []interface{} {
 	a := make([]interface{}, size)
 
 	for i := 0; i < size; i++ {
-		a[i] = val{i & 0xeeeeee, i, 0}
+		a[i] = val{i & 0xeeeeee, i}
 	}
 
 	return a
@@ -38,10 +38,12 @@ func IsSorted(a []interface{}, lessThan LessThan) bool {
 	return true
 }
 
+// use this comparator for sorting
 func KeyLessThan(a, b interface{}) bool {
 	return a.(val).key < b.(val).key
 }
 
+// use this comparator to validate sorted data (and prove its stable)
 func KeyOrderLessThan(a, b interface{}) bool {
 	if a.(val).key < b.(val).key {
 		return true
@@ -52,15 +54,16 @@ func KeyOrderLessThan(a, b interface{}) bool {
 	return false
 }
 
+// use this comparator to restore the original order of elements (by sorting on order field)
 func OrderLessThan(a, b interface{}) bool {
 	return a.(val).order < b.(val).order
 }
 
 func TestSmoke(t *testing.T) {
 	a := make([]interface{}, 3)
-	a[0] = val{3, 0, 0}
-	a[1] = val{1, 1, 0}
-	a[2] = val{2, 2, 0}
+	a[0] = val{3, 0}
+	a[1] = val{1, 1}
+	a[2] = val{2, 2}
 
 	Sort(a, KeyLessThan)
 
@@ -72,9 +75,9 @@ func TestSmoke(t *testing.T) {
 
 func TestSmokeStability(t *testing.T) {
 	a := make([]interface{}, 3)
-	a[0] = val{3, 0, 0}
-	a[1] = val{2, 1, 0}
-	a[2] = val{2, 2, 0}
+	a[0] = val{3, 0}
+	a[1] = val{2, 1}
+	a[2] = val{2, 2}
 
 	Sort(a, KeyLessThan)
 
@@ -106,14 +109,14 @@ func makeRandomArray(size int) []interface{} {
 	a := make([]interface{}, size)
 
 	for i := 0; i < size; i++ {
-		a[i] = val{rand.Intn(100), i, 0}
+		a[i] = val{rand.Intn(100), i}
 	}
 
 	return a
 }
 
 func Equals(a, b interface{}) bool {
-	return a.(val).key == b.(val).key && a.(val).order == b.(val).order && a.(val).payload == b.(val).payload
+	return a.(val).key == b.(val).key && a.(val).order == b.(val).order
 }
 
 func TestRandom1M(t *testing.T) {
@@ -202,24 +205,24 @@ func TestBentleyMcIlroy(t *testing.T) {
 				for i := 0; i < n; i++ {
 					switch dist {
 					case _Sawtooth:
-						data[i] = val{i % m, i, 0}
+						data[i] = val{i % m, i}
 					case _Rand:
-						data[i] = val{rand.Intn(m), i, 0}
+						data[i] = val{rand.Intn(m), i}
 					case _Stagger:
-						data[i] = val{(i*m + i) % n, i, 0}
+						data[i] = val{(i*m + i) % n, i}
 					case _Plateau:
 						if i < m {
-							data[i] = val{i, i, 0}
+							data[i] = val{i, i}
 						} else {
-							data[i] = val{m, i, 0}
+							data[i] = val{m, i}
 						}
 					case _Shuffle:
 						if rand.Intn(m) != 0 {
 							j += 2
-							data[i] = val{j, i, 0}
+							data[i] = val{j, i}
 						} else {
 							k += 2
-							data[i] = val{k, i, 0}
+							data[i] = val{k, i}
 						}
 					}
 				}
@@ -229,25 +232,25 @@ func TestBentleyMcIlroy(t *testing.T) {
 					switch mode {
 					case _Copy:
 						for i := 0; i < n; i++ {
-							mdata[i] = val{data[i].(val).key, i, 0}
+							mdata[i] = val{data[i].(val).key, i}
 						}
 					case _Reverse:
 						for i := 0; i < n; i++ {
-							mdata[i] = val{data[n-i-1].(val).key, i, 0}
+							mdata[i] = val{data[n-i-1].(val).key, i}
 						}
 					case _ReverseFirstHalf:
 						for i := 0; i < n/2; i++ {
-							mdata[i] = val{data[n/2-i-1].(val).key, i, 0}
+							mdata[i] = val{data[n/2-i-1].(val).key, i}
 						}
 						for i := n / 2; i < n; i++ {
-							mdata[i] = val{data[i].(val).key, i, 0}
+							mdata[i] = val{data[i].(val).key, i}
 						}
 					case _ReverseSecondHalf:
 						for i := 0; i < n/2; i++ {
-							mdata[i] = val{data[i].(val).key, i, 0}
+							mdata[i] = val{data[i].(val).key, i}
 						}
 						for i := n / 2; i < n; i++ {
-							mdata[i] = val{data[n-(i-n/2)-1].(val).key, i, 0}
+							mdata[i] = val{data[n-(i-n/2)-1].(val).key, i}
 						}
 					case _Sorted:
 						for i := 0; i < n; i++ {
@@ -258,14 +261,14 @@ func TestBentleyMcIlroy(t *testing.T) {
 						Sort(mdata, KeyLessThan)
 					case _Dither:
 						for i := 0; i < n; i++ {
-							mdata[i] = val{data[i].(val).key + i%5, i, 0}
+							mdata[i] = val{data[i].(val).key + i%5, i}
 						}
 					}
 
 					desc := fmt.Sprintf("n=%d m=%d dist=%s mode=%s", n, m, dists[dist], modes[mode])
 
 					for i := 0; i < len(mdata); i++ {
-						mdata[i] = val{mdata[i].(val).key, i, 0}
+						mdata[i] = val{mdata[i].(val).key, i}
 					}
 
 					gdata := make([]interface{}, len(mdata))
