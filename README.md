@@ -21,6 +21,10 @@ which, in turn, was based on the original code by Tim Peters:
 3. `make` builds all
 4. `make install` installs package
 
+Alternatively, you can intall using `goinstall github.com/pgmmpk/timsort`, but
+if you do this, the import statement in your programs will be `import github.com/pgmmpk/timsort` instead of just `import timsort`.
+
+
 ## Testing
 
 In source directory, say
@@ -35,10 +39,9 @@ In source directory, say
 
     make bench
 
-to run benchmarks. Each combination of input type/size is presented to timsort and to standard Go sort (sort.Sort) for comparison. See `BENCHMARKS.md` for more info and some benchmarking results.
-
-Alternatively, you can intall using `goinstall github.com/pgmmpk/timsort`, but
-if you do this, the import statement in your programs will be `import github.com/pgmmpk/timsort` instead of just `import timsort`.
+to run benchmarks. Each combination of input type/size is presented to timsort,
+and, for comparison, to the standard Go sort (sort.Sort).
+See `BENCHMARKS.md` for more info and some benchmarking results.
 
 ## Example
 
