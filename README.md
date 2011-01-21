@@ -48,8 +48,8 @@ See `BENCHMARKS.md` for more info and some benchmarking results.
 	package main
 
 	import (
-// depending on how timsort was installed, use the appropriate import target
-// 		"github.com/pgmmpk/timsort"
+        // depending on how timsort was installed, use the appropriate import target
+        //	"github.com/pgmmpk/timsort"
 		"timsort"
 		"fmt"
 	)
