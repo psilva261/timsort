@@ -25,4 +25,6 @@ Three columns represent three benchmark runs.
 
 Not surprisingly, timsort is crazy fast on sorted inputs. But even for random and quasi-random (xor) inputs, timsort is at least 2x faster than built-in sort.
 
-Disclaimer:  the above benchmark applies only to one specific type of data element (`record` structure as defined in `bench_test.go`). For other data types results may vary.
+### Disclaimer
+
+The above benchmark applies only to one specific type of data element (`record` structure as defined in `bench_test.go`). For other data types results may vary.
