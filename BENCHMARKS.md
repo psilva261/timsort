@@ -2,9 +2,11 @@
 
 Tested on: AMD Athlon(tm) 64 X2 Dual Core Processor 5200+ running 64-bit ubuntu 10.10.
 
-Numbers are ns/op as reported by `make bench`. First number is for timsort, followed by standard sort in parantheses - for built-in sort. `Xor100` means - sorting 100 elements generated
-using `Xor` method, `Random1M` means - sorting 1 meg (1024*1024) records generated randomly. For more detail on data shapes see sorce - `bench_test.go`. Three columns represent three
-benchmark runs. 
+Numbers are ns/op as reported by `make bench`. First number is for timsort, followed by standard sort in parantheses.
+`Xor100` means - sorting 100 elements generated using `Xor` method,
+`Random1M` means - sorting 1 meg (1024*1024) records generated randomly. 
+For more detail on data shapes see sorce - `bench_test.go`. 
+Three columns represent three benchmark runs. 
 
     Sorted100:          7042(70578)            6933(68945)            6890(68955)
     RevSorted100:       7328(71239)            7283(70233)            7252(69968)
@@ -22,3 +24,5 @@ benchmark runs.
     Random1M:     1618038000(3600431000) 1589860000(3548680000) 1591280000(3557897000)
 
 Not surprisingly, timsort is crazy fast on sorted inputs. But even for random and quasi-random (xor) inputs, timsort is at least 2x faster than built-in sort.
+
+Disclaimer:  the above benchmark applies only to one specific type of data element (`record` structure as defined in `bench_test.go`). For other data types results may vary.
