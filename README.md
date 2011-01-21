@@ -21,7 +21,7 @@ which, in turn, was based on the original code by Tim Peters:
 3. `make` builds all
 4. `make install` installs package
 
-Alternatively, you can intall using `goinstall github.com/pgmmpk/timsort`, but
+Alternatively, you can install using `goinstall github.com/pgmmpk/timsort`, but
 if you do this, the import statement in your programs will be `import github.com/pgmmpk/timsort` instead of just `import timsort`.
 
 
