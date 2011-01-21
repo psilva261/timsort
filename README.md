@@ -33,9 +33,9 @@ to run test harness
 
 In source directory, say
 
-   make bench
+    make bench
 
-to run benchmarks. Each combination of input type/size is presented to timsort and to standard Go sort (sort.Sort) for comparison. See [BENCHMARKS.md] for more info and some benchmarking results.
+to run benchmarks. Each combination of input type/size is presented to timsort and to standard Go sort (sort.Sort) for comparison. See [[BENCHMARKS.md]] for more info and some benchmarking results.
 
 Alternatively, you can intall using `goinstall github.com/pgmmpk/timsort`, but
 if you do this, the import statement in your programs will be `import github.com/pgmmpk/timsort` instead of just `import timsort`.
