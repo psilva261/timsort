@@ -92,6 +92,38 @@ func benchmarkStandardSort(b *testing.B, size int, shape string) {
 	}
 }
 
+func BenchmarkTimsortXor100(b *testing.B) {
+	benchmarkTimsort(b, 100, "xor")
+}
+
+func BenchmarkStandardSortXor100(b *testing.B) {
+	benchmarkStandardSort(b, 100, "xor")
+}
+
+func BenchmarkTimsortSorted100(b *testing.B) {
+	benchmarkTimsort(b, 100, "sorted")
+}
+
+func BenchmarkStandardSortSorted100(b *testing.B) {
+	benchmarkStandardSort(b, 100, "sorted")
+}
+
+func BenchmarkTimsortRevSorted100(b *testing.B) {
+	benchmarkTimsort(b, 100, "revsorted")
+}
+
+func BenchmarkStandardSortRevSorted100(b *testing.B) {
+	benchmarkStandardSort(b, 100, "revsorted")
+}
+
+func BenchmarkTimsortRandom100(b *testing.B) {
+	benchmarkTimsort(b, 100, "random")
+}
+
+func BenchmarkStandardSortRandom100(b *testing.B) {
+	benchmarkStandardSort(b, 100, "random")
+}
+
 func BenchmarkTimsortXor1K(b *testing.B) {
 	benchmarkTimsort(b, 1024, "xor")
 }

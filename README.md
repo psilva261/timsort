@@ -3,9 +3,10 @@
 **timsort** is a Go implementation of Tim Peters's mergesort
 sorting algorithm.
 
-For many input types its 2-3 times faster than Go's built-in sorting. The
-main drawback of this sort method is that it is not in-place (as its is based
-on mergesort), and may put extra strain on garbage collector.
+For many input types it is 2-3 times faster than Go's built-in sorting.
+
+The main drawback of this sort method is that it is not in-place (as any
+mergesort), and may put extra strain on garbage collector.
 
 This implementation was derived from Java's TimSort object by Josh Bloch,
 which, in turn, was based on the original code by Tim Peters:
@@ -19,8 +20,22 @@ which, in turn, was based on the original code by Tim Peters:
 2. `cd timsort`
 3. `make` builds all
 4. `make install` installs package
-5. `make test` (optional) runs test harness
-6. `make bench` (optional) runs benchmarks comparing timsort speed to built-in sort.Sort
+
+## Testing
+
+In source directory, say
+
+    make test
+
+to run test harness
+
+## Benchmarking
+
+In source directory, say
+
+   make bench
+
+to run benchmarks. Each combination of input type/size is presented to timsort and to standard Go sort (sort.Sort) for comparison. See [BENCHMARKS.md] for more info and some benchmarking results.
 
 Alternatively, you can intall using `goinstall github.com/pgmmpk/timsort`, but
 if you do this, the import statement in your programs will be `import github.com/pgmmpk/timsort` instead of just `import timsort`.
@@ -62,12 +77,4 @@ if you do this, the import statement in your programs will be `import github.com
 		fmt.Printf("sorted by name: %v\n", db)
 	}
 
-## Todo
-
-* more testing
-* more benchmarking
-* //done// try different values for MIN_MERGE contstant (original Tim's code used 64, while java code uses 32)
-* try replacing stackLen computation with simple constant (as in original Tim's code)
-
-Mike K.
 

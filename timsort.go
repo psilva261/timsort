@@ -38,15 +38,15 @@ const (
 	 * of the minimum stack length required as a function of the length
 	 * of the array being sorted and the minimum merge sequence length.
 	 */
-	c_MIN_MERGE = 32
-// MK: tried higher MIN_MERGE and got slower sorting (348->375)
+	_MIN_MERGE = 32
+// mk: tried higher MIN_MERGE and got slower sorting (348->375)
 //	c_MIN_MERGE = 64
 
 	/**
 	 * When we get into galloping mode, we stay there until both runs win less
 	 * often than c_MIN_GALLOP consecutive times.
 	 */
-	c_MIN_GALLOP = 7
+	_MIN_GALLOP = 7
 
 	/**
 	 * Maximum initial size of tmp array, which is used for merging.  The array
@@ -55,7 +55,7 @@ const (
 	 * Unlike Tim's original C version, we do not allocate this much storage
 	 * when sorting smaller arrays.  This change was required for performance.
 	 */
-	c_INITIAL_TMP_STORAGE_LENGTH = 256
+	_INITIAL_TMP_STORAGE_LENGTH = 256
 )
 
 // Delegate type that sorting uses as a comparator
@@ -71,7 +71,7 @@ type timSortHandler struct {
 	/**
 	 * The comparator for this sort.
 	 */
-	c LessThan
+	lt LessThan
 
 	/**
 	 * This controls when we get *into* galloping mode.  It is initialized
@@ -106,23 +106,23 @@ type timSortHandler struct {
  * @param a the array to be sorted
  * @param c the comparator to determine the order of the sort
  */
-func newTimSort(a []interface{}, c LessThan) (out *timSortHandler) {
-	out = new(timSortHandler)
+func newTimSort(a []interface{}, lt LessThan) (self *timSortHandler) {
+	self = new(timSortHandler)
 
-	out.a = a
-	out.c = c
-	out.minGallop = c_MIN_GALLOP
-	out.stackSize = 0
+	self.a  = a
+	self.lt = lt
+	self.minGallop = _MIN_GALLOP
+	self.stackSize = 0
 
 	// Allocate temp storage (which may be increased later if necessary)
 	len := len(a)
 
-	tmpSize := c_INITIAL_TMP_STORAGE_LENGTH
+	tmpSize := _INITIAL_TMP_STORAGE_LENGTH
 	if len < 2*tmpSize {
 		tmpSize = len / 2
 	}
 
-	out.tmp = make([]interface{}, tmpSize)
+	self.tmp = make([]interface{}, tmpSize)
 
 	/*
 	 * Allocate runs-to-be-merged stack (which cannot be expanded).  The
@@ -134,6 +134,8 @@ func newTimSort(a []interface{}, c LessThan) (out *timSortHandler) {
 	 * computation below must be changed if c_MIN_MERGE is decreased.  See
 	 * the c_MIN_MERGE declaration above for more information.
 	 */
+	// mk: confirmed that for small sorts this optimization gives measurable (albeit small)
+	// performance enhancement
 	stackLen := 40
 	if len < 120 {
 		stackLen = 5
@@ -143,14 +145,14 @@ func newTimSort(a []interface{}, c LessThan) (out *timSortHandler) {
 		stackLen = 19
 	}
 
-	out.runBase = make([]int, stackLen)
-	out.runLen = make([]int, stackLen)
+	self.runBase = make([]int, stackLen)
+	self.runLen = make([]int, stackLen)
 
-	return out
+	return self
 }
 
 // Sorts an array using the provided comparator
-func Sort(a []interface{}, c LessThan) {
+func Sort(a []interface{}, lt LessThan) {
 	lo := 0
 	hi := len(a)
 	nRemaining := hi
@@ -160,10 +162,10 @@ func Sort(a []interface{}, c LessThan) {
 	}
 
 	// If array is small, do a "mini-TimSort" with no merges
-	if nRemaining < c_MIN_MERGE {
-		initRunLen := countRunAndMakeAscending(a, lo, hi, c)
+	if nRemaining < _MIN_MERGE {
+		initRunLen := countRunAndMakeAscending(a, lo, hi, lt)
 
-		binarySort(a, lo, hi, lo+initRunLen, c)
+		binarySort(a, lo, hi, lo+initRunLen, lt)
 		return
 	}
 
@@ -173,11 +175,11 @@ func Sort(a []interface{}, c LessThan) {
 	 * to maintain stack invariant.
 	 */
 
-	ts := newTimSort(a, c)
+	ts := newTimSort(a, lt)
 	minRun := minRunLength(nRemaining)
 	for {
 		// Identify next run
-		runLen := countRunAndMakeAscending(a, lo, hi, c)
+		runLen := countRunAndMakeAscending(a, lo, hi, lt)
 
 		// If run is short, extend to min(minRun, nRemaining)
 		if runLen < minRun {
@@ -185,7 +187,7 @@ func Sort(a []interface{}, c LessThan) {
 			if nRemaining <= minRun {
 				force = nRemaining
 			}
-			binarySort(a, lo, lo+force, lo+runLen, c)
+			binarySort(a, lo, lo+force, lo+runLen, lt)
 			runLen = force
 		}
 
@@ -230,7 +232,7 @@ func Sort(a []interface{}, c LessThan) {
  *        not already known to be sorted (@code lo <= start <= hi}
  * @param c comparator to used for the sort
  */
-func binarySort(a []interface{}, lo, hi, start int, c LessThan) {
+func binarySort(a []interface{}, lo, hi, start int, lt LessThan) {
 	if lo > start || start > hi {
 		panic("lo <= start && start <= hi")
 	}
@@ -257,7 +259,7 @@ func binarySort(a []interface{}, lo, hi, start int, c LessThan) {
 		 */
 		for left < right {
 			mid := (left + right) / 2
-			if c(pivot, a[mid]) {
+			if lt(pivot, a[mid]) {
 				right = mid
 			} else {
 				left = mid + 1
@@ -316,7 +318,7 @@ func binarySort(a []interface{}, lo, hi, start int, c LessThan) {
   * @return  the length of the run beginning at the specified position in
   *          the specified array
 */
-func countRunAndMakeAscending(a []interface{}, lo, hi int, c LessThan) int {
+func countRunAndMakeAscending(a []interface{}, lo, hi int, lt LessThan) int {
 
 	if lo >= hi {
 		panic("lo < hi")
@@ -328,15 +330,15 @@ func countRunAndMakeAscending(a []interface{}, lo, hi int, c LessThan) int {
 	}
 
 	// Find end of run, and reverse range if descending
-	if c(a[runHi], a[lo]) { // Descending
+	if lt(a[runHi], a[lo]) { // Descending
 		runHi++
 
-		for runHi < hi && c(a[runHi], a[runHi-1]) {
+		for runHi < hi && lt(a[runHi], a[runHi-1]) {
 			runHi++
 		}
 		reverseRange(a, lo, runHi)
 	} else { // Ascending
-		for runHi < hi && !c(a[runHi], a[runHi-1]) {
+		for runHi < hi && !lt(a[runHi], a[runHi-1]) {
 			runHi++
 		}
 	}
@@ -384,7 +386,7 @@ func minRunLength(n int) int {
 		panic("n >= 0")
 	}
 	r := 0 // Becomes 1 if any 1 bits are shifted off
-	for n >= c_MIN_MERGE {
+	for n >= _MIN_MERGE {
 		r |= (n & 1)
 		n >>= 1
 	}
@@ -493,7 +495,7 @@ func (self *timSortHandler) mergeAt(i int) {
 	 * Find where the first element of run2 goes in run1. Prior elements
 	 * in run1 can be ignored (because they're already in place).
 	 */
-	k := gallopRight(self.a[base2], self.a, base1, len1, 0, self.c)
+	k := gallopRight(self.a[base2], self.a, base1, len1, 0, self.lt)
 	if k < 0 {
 		panic(" k >= 0;")
 	}
@@ -507,7 +509,7 @@ func (self *timSortHandler) mergeAt(i int) {
 	 * Find where the last element of run1 goes in run2. Subsequent elements
 	 * in run2 can be ignored (because they're already in place).
 	 */
-	len2 = gallopLeft(self.a[base1+len1-1], self.a, base2, len2, len2-1, self.c)
+	len2 = gallopLeft(self.a[base1+len1-1], self.a, base2, len2, len2-1, self.lt)
 	if len2 < 0 {
 		panic(" len2 >= 0;")
 	}
@@ -738,7 +740,7 @@ func (self *timSortHandler) mergeLo(base1, len1, base2, len2 int) {
 		return
 	}
 
-	c := self.c                 // Use local variable for performance
+	lt := self.lt                 // Use local variable for performance
 	minGallop := self.minGallop //  "    "       "     "      "
 
 outer:
@@ -755,7 +757,7 @@ outer:
 				panic(" len1 > 1 && len2 > 0")
 			}
 
-			if c(a[cursor2], tmp[cursor1]) {
+			if lt(a[cursor2], tmp[cursor1]) {
 				a[dest] = a[cursor2]
 				dest++
 				cursor2++
@@ -790,7 +792,7 @@ outer:
 			if len1 <= 1 || len2 <= 0 {
 				panic("len1 > 1 && len2 > 0")
 			}
-			count1 = gallopRight(a[cursor2], tmp, cursor1, len1, 0, c)
+			count1 = gallopRight(a[cursor2], tmp, cursor1, len1, 0, lt)
 			if count1 != 0 {
 				copy(a[dest:dest+count1], tmp[cursor1:cursor1+count1])
 				dest += count1
@@ -808,7 +810,7 @@ outer:
 				break outer
 			}
 
-			count2 = gallopLeft(tmp[cursor1], a, cursor2, len2, 0, c)
+			count2 = gallopLeft(tmp[cursor1], a, cursor2, len2, 0, lt)
 			if count2 != 0 {
 				copy(a[dest:dest+count2], a[cursor2:cursor2+count2])
 				dest += count2
@@ -826,7 +828,7 @@ outer:
 				break outer
 			}
 			minGallop--
-			if count1 < c_MIN_GALLOP && count2 < c_MIN_GALLOP {
+			if count1 < _MIN_GALLOP && count2 < _MIN_GALLOP {
 				break
 			}
 		}
@@ -906,7 +908,7 @@ func (self *timSortHandler) mergeHi(base1, len1, base2, len2 int) {
 		return
 	}
 
-	c := self.c                 // Use local variable for performance
+	lt := self.lt                 // Use local variable for performance
 	minGallop := self.minGallop //  "    "       "     "      "
 
 outer:
@@ -922,7 +924,7 @@ outer:
 			if len1 <= 0 || len2 <= 1 {
 				panic(" len1 > 0 && len2 > 1;")
 			}
-			if c(tmp[cursor2], a[cursor1]) {
+			if lt(tmp[cursor2], a[cursor1]) {
 				a[dest] = a[cursor1]
 				dest--
 				cursor1--
@@ -957,7 +959,7 @@ outer:
 			if len1 <= 0 || len2 <= 1 {
 				panic(" len1 > 0 && len2 > 1;")
 			}
-			count1 = len1 - gallopRight(tmp[cursor2], a, base1, len1, len1-1, c)
+			count1 = len1 - gallopRight(tmp[cursor2], a, base1, len1, len1-1, lt)
 			if count1 != 0 {
 				dest -= count1
 				cursor1 -= count1
@@ -975,7 +977,7 @@ outer:
 				break outer
 			}
 
-			count2 = len2 - gallopLeft(a[cursor1], tmp, 0, len2, len2-1, c)
+			count2 = len2 - gallopLeft(a[cursor1], tmp, 0, len2, len2-1, lt)
 			if count2 != 0 {
 				dest -= count2
 				cursor2 -= count2
@@ -994,7 +996,7 @@ outer:
 			}
 			minGallop--
 
-			if count1 < c_MIN_GALLOP && count2 < c_MIN_GALLOP {
+			if count1 < _MIN_GALLOP && count2 < _MIN_GALLOP {
 				break
 			}
 		}
