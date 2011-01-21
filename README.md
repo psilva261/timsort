@@ -79,4 +79,4 @@ See [BENCHMARKS.md][BENCHMARKS.md] for more info and some benchmarking results.
 	}
 
 [listsort]: http://svn.python.org/projects/python/trunk/Objects/listsort.txt
-[BENCHMARKS.md]: http://github.com/pgmmpk/timsort/BENCHMARKS.md
+[BENCHMARKS.md]: http://github.com/pgmmpk/timsort/blob/master/BENCHMARKS.md
