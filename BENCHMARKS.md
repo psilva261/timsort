@@ -27,6 +27,6 @@ Not surprisingly, timsort is crazy fast on sorted inputs. But even for random an
 
 ### Disclaimer
 
-The above benchmark applies only to one specific type of data element (`record` structure as defined in `bench_test.go`). For other data types results may vary.
+The above benchmark applies only to one specific type of data element (`record` structure as defined in [bench_test.go][bench_test.go]). For other data types results may vary.
 
 [bench_test.go]: http://github.com/pgmmpk/timsort/blob/master/bench_test.go
