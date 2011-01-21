@@ -9,10 +9,7 @@ The main drawback of this sort method is that it is not in-place (as any
 mergesort), and may put extra strain on garbage collector.
 
 This implementation was derived from Java's TimSort object by Josh Bloch,
-which, in turn, was based on the original code by Tim Peters:
-
-	http://svn.python.org/projects/python/trunk/Objects/listsort.txt
-
+which, in turn, was based on the [original code by Tim Peters][listsort]
 
 ## Installation
 
@@ -23,7 +20,6 @@ which, in turn, was based on the original code by Tim Peters:
 
 Alternatively, you can install using `goinstall github.com/pgmmpk/timsort`, but
 if you do this, the import statement in your programs should be `import github.com/pgmmpk/timsort` instead of just `import timsort`.
-
 
 ## Testing
 
@@ -41,7 +37,7 @@ In source directory, say
 
 to run benchmarks. Each combination of input type/size is presented to timsort,
 and, for comparison, to the standard Go sort (sort.Sort).
-See `BENCHMARKS.md` for more info and some benchmarking results.
+See [BENCHMARKS.md][BENCHMARKS.md] for more info and some benchmarking results.
 
 ## Example
 
@@ -82,4 +78,5 @@ See `BENCHMARKS.md` for more info and some benchmarking results.
 		fmt.Printf("sorted by name: %v\n", db)
 	}
 
-
+[listsort]: http://svn.python.org/projects/python/trunk/Objects/listsort.txt
+[BENCHMARKS.md]: http://github.com/pgmmpk/timsort/BENCHMARKS.md

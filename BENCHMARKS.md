@@ -5,7 +5,7 @@ Tested on: AMD Athlon(tm) 64 X2 Dual Core Processor 5200+ running 64-bit ubuntu 
 Numbers are ns/op as reported by `make bench`. First number is for timsort, followed by standard sort in parantheses.
 `Xor100` means - sorting 100 elements generated using `Xor` method,
 `Random1M` means - sorting 1 meg (1024*1024) records generated randomly. 
-For more detail on data shapes see the source - `bench_test.go`. 
+For more detail on data shapes see the source - [bench_test.go][bench_test.go]. 
 Three columns represent three benchmark runs. 
 
     Sorted100:          7042(70578)            6933(68945)            6890(68955)
@@ -28,3 +28,5 @@ Not surprisingly, timsort is crazy fast on sorted inputs. But even for random an
 ### Disclaimer
 
 The above benchmark applies only to one specific type of data element (`record` structure as defined in `bench_test.go`). For other data types results may vary.
+
+[bench_test.go]: http://hithub.com/pgmmpk/timsort/bench_test.go
