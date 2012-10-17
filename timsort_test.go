@@ -1,10 +1,9 @@
 package timsort
 
 import (
-	"testing"
-	"rand"
 	"fmt"
-	"container/vector"
+	"math/rand"
+	"testing"
 )
 
 type val struct {
@@ -72,7 +71,6 @@ func TestSmoke(t *testing.T) {
 	}
 }
 
-
 func TestSmokeStability(t *testing.T) {
 	a := make([]interface{}, 3)
 	a[0] = val{3, 0}
@@ -85,7 +83,6 @@ func TestSmokeStability(t *testing.T) {
 		t.Error("not sorted")
 	}
 }
-
 
 func Test1K(t *testing.T) {
 	a := makeTestArray(1024)
@@ -147,26 +144,6 @@ type person struct {
 
 func (self *person) Less(o interface{}) bool {
 	return self.ssn < o.(*person).ssn
-}
-
-func TestSortVector(t *testing.T) {
-	var v vector.Vector
-
-	v.Push(&person{123, "jack"})
-	v.Push(&person{124, "mary"})
-	v.Push(&person{120, "bill"})
-
-	SortVector(v)
-
-	if v[0].(*person).name != "bill" {
-		t.Error("bill")
-	}
-	if v[1].(*person).name != "jack" {
-		t.Error("jack")
-	}
-	if v[2].(*person).name != "mary" {
-		t.Error("mary")
-	}
 }
 
 const (

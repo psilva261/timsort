@@ -1,15 +1,27 @@
 package timsort
 
 import (
-	"testing"
+	"math/rand"
 	"sort"
-	"rand"
-	//	"fmt"
-	"container/vector"
+	"testing"
 )
 
 type record struct {
 	key, order int
+}
+
+type records []interface{}
+
+func (p records) Len() int {
+	return len(p)
+}
+
+func (p records) Less(i, j int) bool {
+	return p[i].(*record).Less(p[j])
+}
+
+func (p records) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
 }
 
 func (self *record) Less(o interface{}) bool {
@@ -33,32 +45,29 @@ func LessThanByKeyByOrder(a, b interface{}) bool {
 	return false
 }
 
-func makeVector(size int, shape string) vector.Vector {
-
-	var v vector.Vector
-
+func makeVector(size int, shape string) (v records) {
 	switch shape {
 
 	case "xor":
 		for i := 0; i < size; i++ {
-			v.Push(&record{0xff & (i ^ 0xab), i})
+			v = append(v, &record{0xff & (i ^ 0xab), i})
 		}
 
 	case "sorted":
 		for i := 0; i < size; i++ {
-			v.Push(&record{i, i})
+			v = append(v, &record{i, i})
 		}
 
 	case "revsorted":
 		for i := 0; i < size; i++ {
-			v.Push(&record{size - i, i})
+			v = append(v, &record{size - i, i})
 		}
 
 	case "random":
 		rand.Seed(1)
 
 		for i := 0; i < size; i++ {
-			v.Push(&record{rand.Int(), i})
+			v = append(v, &record{rand.Int(), i})
 		}
 
 	default:

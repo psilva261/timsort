@@ -16,10 +16,6 @@
 // Mike K.
 package timsort
 
-import (
-	"container/vector"
-)
-
 const (
 	/**
 	 * This is the minimum sized sequence that will be merged.  Shorter
@@ -1068,15 +1064,4 @@ func (self *timSortHandler) ensureCapacity(minCapacity int) []interface{} {
 	}
 
 	return self.tmp
-}
-
-func vectorLessThan(a, b interface{}) bool {
-	return a.(vector.LessInterface).Less(b)
-}
-
-// Sorts an array (or vector.Vector) delegating comparison to
-// vector.LessInterface that elements are expected to implement.
-// This is a convenience function - a drop-in replacement for built-in sorting.
-func SortVector(a []interface{}) {
-	Sort(a, vectorLessThan)
 }
