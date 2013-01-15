@@ -373,10 +373,8 @@ func countRunAndMakeAscending(a []interface{}, lo, hi int, lt LessThan) (int, er
 func reverseRange(a []interface{}, lo, hi int) {
 	hi--
 	for lo < hi {
-		t := a[lo]
-		a[lo] = a[hi]
+		a[lo], a[hi] = a[hi], a[lo]
 		lo++
-		a[hi] = t
 		hi--
 	}
 }

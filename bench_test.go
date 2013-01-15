@@ -17,15 +17,11 @@ func (p records) Len() int {
 }
 
 func (p records) Less(i, j int) bool {
-	return p[i].(*record).Less(p[j])
+	return p[i].(*record).key < p[j].(*record).key
 }
 
 func (p records) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
-}
-
-func (self *record) Less(o interface{}) bool {
-	return self.key < o.(*record).key
 }
 
 func LessThanByKey(a, b interface{}) bool {
@@ -46,6 +42,7 @@ func LessThanByKeyByOrder(a, b interface{}) bool {
 }
 
 func makeVector(size int, shape string) (v records) {
+	v = make(records, 0, size)
 	switch shape {
 
 	case "xor":
