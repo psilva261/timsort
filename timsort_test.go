@@ -42,6 +42,20 @@ func KeyLessThan(a, b interface{}) bool {
 	return a.(val).key < b.(val).key
 }
 
+type KeyLessThanSlice []interface{}
+
+func (s KeyLessThanSlice) Len() int {
+    return len(s)
+}
+
+func (s KeyLessThanSlice) Swap(i, j int) {
+    s[i], s[j] = s[j], s[i]
+}
+
+func (s KeyLessThanSlice) Less(i, j int) bool {
+    return s[i].(val).key < s[j].(val).key
+}
+
 // use this comparator to validate sorted data (and prove its stable)
 func KeyOrderLessThan(a, b interface{}) bool {
 	if a.(val).key < b.(val).key {
@@ -74,6 +88,22 @@ func TestSmoke(t *testing.T) {
 	}
 }
 
+func TestSmokeTS(t *testing.T) {
+	a := make([]interface{}, 3)
+	a[0] = val{3, 0}
+	a[1] = val{1, 1}
+	a[2] = val{2, 2}
+
+	err := TimSort(KeyLessThanSlice(a))
+	if err != nil {
+		t.Fatalf("sort: %v", err)
+	}
+
+	if !IsSorted(a, KeyOrderLessThan) {
+		t.Error("not sorted")
+	}
+}
+
 func TestSmokeStability(t *testing.T) {
 	a := make([]interface{}, 3)
 	a[0] = val{3, 0}
@@ -81,6 +111,22 @@ func TestSmokeStability(t *testing.T) {
 	a[2] = val{2, 2}
 
 	err := Sort(a, KeyLessThan)
+	if err != nil {
+		t.Fatalf("sort: %v", err)
+	}
+
+	if !IsSorted(a, KeyOrderLessThan) {
+		t.Error("not sorted")
+	}
+}
+
+func TestSmokeStabilityTS(t *testing.T) {
+	a := make([]interface{}, 3)
+	a[0] = val{3, 0}
+	a[1] = val{2, 1}
+	a[2] = val{2, 2}
+
+	err := TimSort(KeyLessThanSlice(a))
 	if err != nil {
 		t.Fatalf("sort: %v", err)
 	}
@@ -102,10 +148,34 @@ func Test1K(t *testing.T) {
 	}
 }
 
+func Test1KTS(t *testing.T) {
+	a := makeTestArray(1024)
+
+	err := TimSort(KeyLessThanSlice(a))
+	if err != nil {
+		t.Fatalf("sort: %v", err)
+	}
+	if !IsSorted(a, KeyOrderLessThan) {
+		t.Error("not sorted")
+	}
+}
+
 func Test1M(t *testing.T) {
 	a := makeTestArray(1024 * 1024)
 
 	err := Sort(a, KeyLessThan)
+	if err != nil {
+		t.Fatalf("sort: %v", err)
+	}
+	if !IsSorted(a, KeyOrderLessThan) {
+		t.Error("not sorted")
+	}
+}
+
+func Test1MTS(t *testing.T) {
+	a := makeTestArray(1024 * 1024)
+
+	err := TimSort(KeyLessThanSlice(a))
 	if err != nil {
 		t.Fatalf("sort: %v", err)
 	}
