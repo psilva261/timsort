@@ -257,7 +257,7 @@ func BenchmarkTimsortXor1M(b *testing.B) {
 	benchmarkTimsort(b, 1024*1024, "xor")
 }
 
-func BenchmarkTimesortInterXor1M(b *testing.B) {
+func BenchmarkTimsortInterXor1M(b *testing.B) {
         benchmarkTimsortInterface(b, 1024*1024, "xor")
 }
 
