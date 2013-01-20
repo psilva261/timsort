@@ -28,17 +28,17 @@ func LessThanByKey(a, b interface{}) bool {
 	return a.(*record).key < b.(*record).key
 }
 
-type RecodeSlice []record
+type RecordSlice []record
 
-func (s RecodeSlice) Len() int {
+func (s RecordSlice) Len() int {
     return len(s)
 }
 
-func (s RecodeSlice) Swap(i, j int) {
+func (s RecordSlice) Swap(i, j int) {
     s[i], s[j] = s[j], s[i]
 }
 
-func (s RecodeSlice) Less(i, j int) bool {
+func (s RecordSlice) Less(i, j int) bool {
     return s[i].key < s[j].key
 }
 
@@ -88,8 +88,8 @@ func makeVector(size int, shape string) (v records) {
 	return v
 }
 
-func makeRecords(size int, shape string) (v RecodeSlice) {
-	v = make(RecodeSlice, 0, size)
+func makeRecords(size int, shape string) (v RecordSlice) {
+	v = make(RecordSlice, 0, size)
 	switch shape {
 
 	case "xor":
