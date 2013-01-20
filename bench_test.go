@@ -149,7 +149,7 @@ func benchmarkStandardSort(b *testing.B, size int, shape string) {
 	b.StopTimer()
 
 	for j := 0; j < b.N; j++ {
-		v := makeVector(size, shape)
+		v := makeRecords(size, shape)
 
 		b.StartTimer()
 		sort.Sort(&v)
@@ -161,12 +161,20 @@ func BenchmarkTimsortXor100(b *testing.B) {
 	benchmarkTimsort(b, 100, "xor")
 }
 
+func BenchmarkTimsortInterXor100(b *testing.B) {
+	benchmarkTimsortInterface(b, 100, "xor")
+}
+
 func BenchmarkStandardSortXor100(b *testing.B) {
 	benchmarkStandardSort(b, 100, "xor")
 }
 
 func BenchmarkTimsortSorted100(b *testing.B) {
 	benchmarkTimsort(b, 100, "sorted")
+}
+
+func BenchmarkTimsortInterSorted100(b *testing.B) {
+	benchmarkTimsortInterface(b, 100, "sorted")
 }
 
 func BenchmarkStandardSortSorted100(b *testing.B) {
@@ -177,12 +185,20 @@ func BenchmarkTimsortRevSorted100(b *testing.B) {
 	benchmarkTimsort(b, 100, "revsorted")
 }
 
+func BenchmarkTimsortInterRevSorted100(b *testing.B) {
+	benchmarkTimsortInterface(b, 100, "revsorted")
+}
+
 func BenchmarkStandardSortRevSorted100(b *testing.B) {
 	benchmarkStandardSort(b, 100, "revsorted")
 }
 
 func BenchmarkTimsortRandom100(b *testing.B) {
 	benchmarkTimsort(b, 100, "random")
+}
+
+func BenchmarkTimsortInterRandom100(b *testing.B) {
+	benchmarkTimsortInterface(b, 100, "random")
 }
 
 func BenchmarkStandardSortRandom100(b *testing.B) {
@@ -193,7 +209,7 @@ func BenchmarkTimsortXor1K(b *testing.B) {
 	benchmarkTimsort(b, 1024, "xor")
 }
 
-func BenchmarkTimsortInterfaceXor1K(b *testing.B) {
+func BenchmarkTimsortInterXor1K(b *testing.B) {
 	benchmarkTimsortInterface(b, 1024, "xor")
 }
 
@@ -205,7 +221,7 @@ func BenchmarkTimsortSorted1K(b *testing.B) {
 	benchmarkTimsort(b, 1024, "sorted")
 }
 
-func BenchmarkTimsortInterfaceSorted1K(b *testing.B) {
+func BenchmarkTimsortInterSorted1K(b *testing.B) {
 	benchmarkTimsortInterface(b, 1024, "sorted")
 }
 
@@ -217,7 +233,7 @@ func BenchmarkTimsortRevSorted1K(b *testing.B) {
 	benchmarkTimsort(b, 1024, "revsorted")
 }
 
-func BenchmarkTimsortInterfaceRevSorted1K(b *testing.B) {
+func BenchmarkTimsortInterRevSorted1K(b *testing.B) {
 	benchmarkTimsortInterface(b, 1024, "revsorted")
 }
 
@@ -229,7 +245,7 @@ func BenchmarkTimsortRandom1K(b *testing.B) {
 	benchmarkTimsort(b, 1024, "random")
 }
 
-func BenchmarkTimsortInterfaceRandom1K(b *testing.B) {
+func BenchmarkTimsortInterRandom1K(b *testing.B) {
 	benchmarkTimsortInterface(b, 1024, "random")
 }
 
@@ -241,6 +257,10 @@ func BenchmarkTimsortXor1M(b *testing.B) {
 	benchmarkTimsort(b, 1024*1024, "xor")
 }
 
+func BenchmarkTimesortInterXor1M(b *testing.B) {
+        benchmarkTimsortInterface(b, 1024*1024, "xor")
+}
+
 func BenchmarkStandardSortXor1M(b *testing.B) {
 	benchmarkStandardSort(b, 1024*1024, "xor")
 }
@@ -249,7 +269,7 @@ func BenchmarkTimsortSorted1M(b *testing.B) {
 	benchmarkTimsort(b, 1024*1024, "sorted")
 }
 
-func BenchmarkTimsortInterfaceSorted1M(b *testing.B) {
+func BenchmarkTimsortInterSorted1M(b *testing.B) {
 	benchmarkTimsortInterface(b, 1024*1024, "sorted")
 }
 
@@ -261,7 +281,7 @@ func BenchmarkTimsortRevSorted1M(b *testing.B) {
 	benchmarkTimsort(b, 1024*1024, "revsorted")
 }
 
-func BenchmarkTimsortInterfaceRevSorted1M(b *testing.B) {
+func BenchmarkTimsortInterRevSorted1M(b *testing.B) {
 	benchmarkTimsortInterface(b, 1024*1024, "revsorted")
 }
 
@@ -273,7 +293,7 @@ func BenchmarkTimsortRandom1M(b *testing.B) {
 	benchmarkTimsort(b, 1024*1024, "random")
 }
 
-func BenchmarkTimsortInterfaceRandom1M(b *testing.B) {
+func BenchmarkTimsortInterRandom1M(b *testing.B) {
 	benchmarkTimsortInterface(b, 1024*1024, "random")
 }
 
