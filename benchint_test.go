@@ -18,7 +18,7 @@ func makeInts(size int, shape string) (v ints) {
 
 	case "xor":
 		for i := 0; i < size; i++ {
-			v = append(v, 0xff & (i ^ 0xab))
+			v = append(v, 0xff&(i^0xab))
 		}
 
 	case "sorted":
@@ -28,7 +28,7 @@ func makeInts(size int, shape string) (v ints) {
 
 	case "revsorted":
 		for i := 0; i < size; i++ {
-			v = append(v, size - i)
+			v = append(v, size-i)
 		}
 
 	case "random":

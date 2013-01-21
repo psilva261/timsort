@@ -25,8 +25,8 @@ func IsSortedI(a []int, lessThan IntLessThan) bool {
 
 	prev := a[0]
 	for i := 1; i < len; i++ {
-		if lessThan(a[1], prev) {
-            fmt.Println("false")
+		if lessThan(a[i], prev) {
+			fmt.Println("false")
 			return false
 		}
 	}
@@ -40,7 +40,7 @@ func intLessThan(a, b int) bool {
 }
 
 func TestSmokeI(t *testing.T) {
-    a := []int{3, 1, 2}
+	a := []int{3, 1, 2}
 
 	err := Ints(a, intLessThan)
 	if err != nil {
@@ -52,30 +52,12 @@ func TestSmokeI(t *testing.T) {
 	}
 }
 
-/*
-func TestSmokeStability(t *testing.T) {
-	a := make([]interface{}, 3)
-	a[0] = val{3, 0}
-	a[1] = val{2, 1}
-	a[2] = val{2, 2}
-
-	err := Sort(a, KeyLessThan)
-	if err != nil {
-		t.Fatalf("sort: %v", err)
-	}
-
-	if !IsSorted(a, KeyOrderLessThan) {
-		t.Error("not sorted")
-	}
-}
-*/
-
 func Test1KI(t *testing.T) {
 	a := makeTestArrayI(1024)
 
 	err := Ints(a, intLessThan)
 	if err != nil {
-        fmt.Printf("sort: %v\n", err)
+		fmt.Printf("sort: %v\n", err)
 		t.Fatalf("sort: %v", err)
 	}
 	if !IsSortedI(a, intLessThan) {

@@ -31,15 +31,15 @@ func LessThanByKey(a, b interface{}) bool {
 type RecordSlice []record
 
 func (s RecordSlice) Len() int {
-    return len(s)
+	return len(s)
 }
 
 func (s RecordSlice) Swap(i, j int) {
-    s[i], s[j] = s[j], s[i]
+	s[i], s[j] = s[j], s[i]
 }
 
 func (s RecordSlice) Less(i, j int) bool {
-    return s[i].key < s[j].key
+	return s[i].key < s[j].key
 }
 
 func LessThanByKeyByOrder(a, b interface{}) bool {
@@ -258,7 +258,7 @@ func BenchmarkTimsortXor1M(b *testing.B) {
 }
 
 func BenchmarkTimsortInterXor1M(b *testing.B) {
-        benchmarkTimsortInterface(b, 1024*1024, "xor")
+	benchmarkTimsortInterface(b, 1024*1024, "xor")
 }
 
 func BenchmarkStandardSortXor1M(b *testing.B) {

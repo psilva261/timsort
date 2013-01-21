@@ -3,7 +3,7 @@ package timsort
 import (
 	"errors"
 	"fmt"
-    "sort"
+	"sort"
 )
 
 // Delegate type that sorting uses as a comparator
@@ -56,9 +56,9 @@ type timSortHandlerI struct {
  */
 func newTimSortI(a []int, lt IntLessThan) (self *timSortHandlerI) {
 	self = &timSortHandlerI{
-        a: a,
-        lt: lt,
-        minGallop: _MIN_GALLOP}
+		a:         a,
+		lt:        lt,
+		minGallop: _MIN_GALLOP}
 
 	// Allocate temp storage (which may be increased later if necessary)
 	len := len(a)
@@ -97,29 +97,33 @@ func newTimSortI(a []int, lt IntLessThan) (self *timSortHandlerI) {
 	return self
 }
 
-
 // TimSort sorts the data defined by sort.Interface.
 func TimSort(a sort.Interface) (err error) {
-    indexes := make([]int, a.Len())
-    for i := 0; i < len(indexes); i ++ {
-        indexes[i] = i
-    } // for i
-    err = Ints(indexes, func(i, j int) bool {
-            return a.Less(i, j)
-        })
-        
-    if err != nil {
-        return err
-    } // if
-    
-    for i := 0; i < len(indexes); i ++ {
-        for j := indexes[i]; j != i; {
-            a.Swap(i, j)
-            indexes[i], indexes[j], j = indexes[j], indexes[i], indexes[j]
-        } // for j
-    } // for i
-    
-    return nil
+	indexes := make([]int, a.Len())
+	for i := 0; i < len(indexes); i++ {
+		indexes[i] = i
+	} // for i
+
+	err = Ints(indexes, func(i, j int) bool {
+		return a.Less(i, j)
+	})
+
+	if err != nil {
+		return err
+	} // if
+
+	for i := 0; i < len(indexes); i++ {
+		j := indexes[i]
+		if j == 0 {
+			continue
+		} //  if
+		for k := i; j != i; {
+			a.Swap(j, k)
+			k, j, indexes[j] = j, indexes[j], 0
+		} // for j
+	} // for i
+
+	return nil
 }
 
 // Ints sorts an interger array using the provided comparator
@@ -825,7 +829,7 @@ outer:
 		minGallop = 1
 	}
 	self.minGallop = minGallop // Write back to field
-    
+
 	if len1 == 1 {
 
 		if len2 <= 0 {
