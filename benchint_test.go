@@ -8,6 +8,11 @@ import (
 
 type ints []int
 
+func (p *ints) Len() int           { return len(*p) }
+func (p *ints) Less(i, j int) bool { return (*p)[i] < (*p)[j] }
+func (p *ints) Swap(i, j int)      { (*p)[i], (*p)[j] = (*p)[j], (*p)[i] }
+
+
 func LessThanInt(a, b int) bool {
 	return a < b
 }
@@ -64,7 +69,7 @@ func benchmarkStandardSortI(b *testing.B, size int, shape string) {
 		v := makeInts(size, shape)
 
 		b.StartTimer()
-		sort.Ints(v)
+		sort.Sort(&v)
 		b.StopTimer()
 	}
 }

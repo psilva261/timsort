@@ -12,34 +12,22 @@ type record struct {
 
 type records []interface{}
 
-func (p records) Len() int {
-	return len(p)
-}
-
-func (p records) Less(i, j int) bool {
-	return p[i].(*record).key < p[j].(*record).key
-}
-
-func (p records) Swap(i, j int) {
-	p[i], p[j] = p[j], p[i]
-}
-
 func LessThanByKey(a, b interface{}) bool {
 	return a.(*record).key < b.(*record).key
 }
 
 type RecordSlice []record
 
-func (s RecordSlice) Len() int {
-	return len(s)
+func (s *RecordSlice) Len() int {
+	return len(*s)
 }
 
-func (s RecordSlice) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
+func (s *RecordSlice) Swap(i, j int) {
+	(*s)[i], (*s)[j] = (*s)[j], (*s)[i]
 }
 
-func (s RecordSlice) Less(i, j int) bool {
-	return s[i].key < s[j].key
+func (s *RecordSlice) Less(i, j int) bool {
+	return (*s)[i].key < (*s)[j].key
 }
 
 func LessThanByKeyByOrder(a, b interface{}) bool {
@@ -56,29 +44,29 @@ func LessThanByKeyByOrder(a, b interface{}) bool {
 }
 
 func makeVector(size int, shape string) (v records) {
-	v = make(records, 0, size)
+	v = make(records, size)
 	switch shape {
 
 	case "xor":
 		for i := 0; i < size; i++ {
-			v = append(v, &record{0xff & (i ^ 0xab), i})
+			v[i] = &record{0xff & (i ^ 0xab), i}
 		}
 
 	case "sorted":
 		for i := 0; i < size; i++ {
-			v = append(v, &record{i, i})
+			v[i] = &record{i, i}
 		}
 
 	case "revsorted":
 		for i := 0; i < size; i++ {
-			v = append(v, &record{size - i, i})
+			v[i] = &record{size - i, i}
 		}
 
 	case "random":
 		rand.Seed(1)
 
 		for i := 0; i < size; i++ {
-			v = append(v, &record{rand.Int(), i})
+			v[i] = &record{rand.Int(), i}
 		}
 
 	default:
@@ -89,29 +77,29 @@ func makeVector(size int, shape string) (v records) {
 }
 
 func makeRecords(size int, shape string) (v RecordSlice) {
-	v = make(RecordSlice, 0, size)
+	v = make(RecordSlice, size)
 	switch shape {
 
 	case "xor":
 		for i := 0; i < size; i++ {
-			v = append(v, record{0xff & (i ^ 0xab), i})
+			v[i] = record{0xff & (i ^ 0xab), i}
 		}
 
 	case "sorted":
 		for i := 0; i < size; i++ {
-			v = append(v, record{i, i})
+			v[i] = record{i, i}
 		}
 
 	case "revsorted":
 		for i := 0; i < size; i++ {
-			v = append(v, record{size - i, i})
+			v[i] = record{size - i, i}
 		}
 
 	case "random":
 		rand.Seed(1)
 
 		for i := 0; i < size; i++ {
-			v = append(v, record{rand.Int(), i})
+			v[i] = record{rand.Int(), i}
 		}
 
 	default:
@@ -140,7 +128,7 @@ func benchmarkTimsortInterface(b *testing.B, size int, shape string) {
 		v := makeRecords(size, shape)
 
 		b.StartTimer()
-		TimSort(v)
+		TimSort(&v)
 		b.StopTimer()
 	}
 }
