@@ -379,7 +379,8 @@ func (hi *timSortHandlerI) pushRun(runBase, runLen int) {
 func (hi *timSortHandlerI) mergeCollapse() (err error) {
 	for hi.stackSize > 1 {
 		n := hi.stackSize - 2
-		if n > 0 && hi.runLen[n-1] <= hi.runLen[n]+hi.runLen[n+1] {
+		if (n > 0 && hi.runLen[n-1] <= hi.runLen[n]+hi.runLen[n+1]) ||
+			(n > 1 && hi.runLen[n-2] <= hi.runLen[n-1]+hi.runLen[n]) {
 			if hi.runLen[n-1] < hi.runLen[n+1] {
 				n--
 			}
