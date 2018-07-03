@@ -271,8 +271,8 @@ type person struct {
 	name string
 }
 
-func (self *person) Less(o interface{}) bool {
-	return self.ssn < o.(*person).ssn
+func (p *person) Less(o interface{}) bool {
+	return p.ssn < o.(*person).ssn
 }
 
 const (

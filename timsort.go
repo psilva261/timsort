@@ -1,4 +1,4 @@
-// Fast stable sort, uses external comparator.
+// Package timsort provides fast stable sort, uses external comparator.
 //
 // A stable, adaptive, iterative mergesort that requires far fewer than
 // n lg(n) comparisons when running on partially sorted arrays, while
@@ -39,15 +39,15 @@ const (
 	 * of the minimum stack length required as a function of the length
 	 * of the array being sorted and the minimum merge sequence length.
 	 */
-	_MIN_MERGE = 32
+	minMerge = 32
 	// mk: tried higher MIN_MERGE and got slower sorting (348->375)
 	//	c_MIN_MERGE = 64
 
 	/**
 	 * When we get into galloping mode, we stay there until both runs win less
-	 * often than c_MIN_GALLOP consecutive times.
+	 * often than cminGallop consecutive times.
 	 */
-	_MIN_GALLOP = 7
+	minGallop = 7
 
 	/**
 	 * Maximum initial size of tmp array, which is used for merging.  The array
@@ -56,10 +56,10 @@ const (
 	 * Unlike Tim's original C version, we do not allocate this much storage
 	 * when sorting smaller arrays.  This change was required for performance.
 	 */
-	_INITIAL_TMP_STORAGE_LENGTH = 256
+	initialTmpStorageLength = 256
 )
 
-// Delegate type that sorting uses as a comparator
+// LessThan is Delegate type that sorting uses as a comparator
 type LessThan func(a, b interface{}) bool
 
 type timSortHandler struct {
@@ -76,7 +76,7 @@ type timSortHandler struct {
 
 	/**
 	 * This controls when we get *into* galloping mode.  It is initialized
-	 * to c_MIN_GALLOP.  The mergeLo and mergeHi methods nudge it higher for
+	 * to cminGallop.  The mergeLo and mergeHi methods nudge it higher for
 	 * random data, and lower for highly structured data.
 	 */
 	minGallop int
@@ -107,23 +107,23 @@ type timSortHandler struct {
  * @param a the array to be sorted
  * @param c the comparator to determine the order of the sort
  */
-func newTimSort(a []interface{}, lt LessThan) (self *timSortHandler) {
-	self = new(timSortHandler)
+func newTimSort(a []interface{}, lt LessThan) (h *timSortHandler) {
+	h = new(timSortHandler)
 
-	self.a = a
-	self.lt = lt
-	self.minGallop = _MIN_GALLOP
-	self.stackSize = 0
+	h.a = a
+	h.lt = lt
+	h.minGallop = minGallop
+	h.stackSize = 0
 
 	// Allocate temp storage (which may be increased later if necessary)
 	len := len(a)
 
-	tmpSize := _INITIAL_TMP_STORAGE_LENGTH
+	tmpSize := initialTmpStorageLength
 	if len < 2*tmpSize {
 		tmpSize = len / 2
 	}
 
-	self.tmp = make([]interface{}, tmpSize)
+	h.tmp = make([]interface{}, tmpSize)
 
 	/*
 	 * Allocate runs-to-be-merged stack (which cannot be expanded).  The
@@ -146,13 +146,13 @@ func newTimSort(a []interface{}, lt LessThan) (self *timSortHandler) {
 		stackLen = 19
 	}
 
-	self.runBase = make([]int, stackLen)
-	self.runLen = make([]int, stackLen)
+	h.runBase = make([]int, stackLen)
+	h.runLen = make([]int, stackLen)
 
-	return self
+	return h
 }
 
-// Sorts an array using the provided comparator
+// Sort an array using the provided comparator
 func Sort(a []interface{}, lt LessThan) (err error) {
 	lo := 0
 	hi := len(a)
@@ -163,7 +163,7 @@ func Sort(a []interface{}, lt LessThan) (err error) {
 	}
 
 	// If array is small, do a "mini-TimSort" with no merges
-	if nRemaining < _MIN_MERGE {
+	if nRemaining < minMerge {
 		initRunLen, err := countRunAndMakeAscending(a, lo, hi, lt)
 		if err != nil {
 			return err
@@ -218,7 +218,7 @@ func Sort(a []interface{}, lt LessThan) (err error) {
 
 	// Merge all remaining runs to complete sort
 	if lo != hi {
-		return errors.New("lo==hi!")
+		return errors.New("lo must equal hi")
 	}
 
 	if err = ts.mergeForceCollapse(); err != nil {
@@ -401,7 +401,7 @@ func minRunLength(n int) (int, error) {
 		return 0, errors.New("n >= 0")
 	}
 	r := 0 // Becomes 1 if any 1 bits are shifted off
-	for n >= _MIN_MERGE {
+	for n >= minMerge {
 		r |= (n & 1)
 		n >>= 1
 	}
@@ -414,10 +414,10 @@ func minRunLength(n int) (int, error) {
  * @param runBase index of the first element in the run
  * @param runLen  the number of elements in the run
  */
-func (self *timSortHandler) pushRun(runBase, runLen int) {
-	self.runBase[self.stackSize] = runBase
-	self.runLen[self.stackSize] = runLen
-	self.stackSize++
+func (h *timSortHandler) pushRun(runBase, runLen int) {
+	h.runBase[h.stackSize] = runBase
+	h.runLen[h.stackSize] = runLen
+	h.stackSize++
 }
 
 /**
@@ -431,19 +431,19 @@ func (self *timSortHandler) pushRun(runBase, runLen int) {
  * so the invariants are guaranteed to hold for i < stackSize upon
  * entry to the method.
  */
-func (self *timSortHandler) mergeCollapse() (err error) {
-	for self.stackSize > 1 {
-		n := self.stackSize - 2
-		if (n > 0 && self.runLen[n-1] <= self.runLen[n]+self.runLen[n+1]) ||
-			(n > 1 && self.runLen[n-2] <= self.runLen[n-1]+self.runLen[n]) {
-			if self.runLen[n-1] < self.runLen[n+1] {
+func (h *timSortHandler) mergeCollapse() (err error) {
+	for h.stackSize > 1 {
+		n := h.stackSize - 2
+		if (n > 0 && h.runLen[n-1] <= h.runLen[n]+h.runLen[n+1]) ||
+			(n > 1 && h.runLen[n-2] <= h.runLen[n-1]+h.runLen[n]) {
+			if h.runLen[n-1] < h.runLen[n+1] {
 				n--
 			}
-			if err = self.mergeAt(n); err != nil {
+			if err = h.mergeAt(n); err != nil {
 				return
 			}
-		} else if self.runLen[n] <= self.runLen[n+1] {
-			if err = self.mergeAt(n); err != nil {
+		} else if h.runLen[n] <= h.runLen[n+1] {
+			if err = h.mergeAt(n); err != nil {
 				return
 			}
 		} else {
@@ -457,13 +457,13 @@ func (self *timSortHandler) mergeCollapse() (err error) {
  * Merges all runs on the stack until only one remains.  This method is
  * called once, to complete the sort.
  */
-func (self *timSortHandler) mergeForceCollapse() (err error) {
-	for self.stackSize > 1 {
-		n := self.stackSize - 2
-		if n > 0 && self.runLen[n-1] < self.runLen[n+1] {
+func (h *timSortHandler) mergeForceCollapse() (err error) {
+	for h.stackSize > 1 {
+		n := h.stackSize - 2
+		if n > 0 && h.runLen[n-1] < h.runLen[n+1] {
 			n--
 		}
-		if err = self.mergeAt(n); err != nil {
+		if err = h.mergeAt(n); err != nil {
 			return
 		}
 	}
@@ -477,8 +477,8 @@ func (self *timSortHandler) mergeForceCollapse() (err error) {
  *
  * @param i stack index of the first of the two runs to merge
  */
-func (self *timSortHandler) mergeAt(i int) (err error) {
-	if self.stackSize < 2 {
+func (h *timSortHandler) mergeAt(i int) (err error) {
+	if h.stackSize < 2 {
 		return errors.New("stackSize >= 2")
 	}
 
@@ -486,14 +486,14 @@ func (self *timSortHandler) mergeAt(i int) (err error) {
 		return errors.New(" i >= 0")
 	}
 
-	if i != self.stackSize-2 && i != self.stackSize-3 {
+	if i != h.stackSize-2 && i != h.stackSize-3 {
 		return errors.New("if i == stackSize - 2 || i == stackSize - 3")
 	}
 
-	base1 := self.runBase[i]
-	len1 := self.runLen[i]
-	base2 := self.runBase[i+1]
-	len2 := self.runLen[i+1]
+	base1 := h.runBase[i]
+	len1 := h.runLen[i]
+	base2 := h.runBase[i+1]
+	len2 := h.runLen[i+1]
 
 	if len1 <= 0 || len2 <= 0 {
 		return errors.New("len1 > 0 && len2 > 0")
@@ -508,18 +508,18 @@ func (self *timSortHandler) mergeAt(i int) (err error) {
 	 * run now, also slide over the last run (which isn't involved
 	 * in this merge).  The current run (i+1) goes away in any case.
 	 */
-	self.runLen[i] = len1 + len2
-	if i == self.stackSize-3 {
-		self.runBase[i+1] = self.runBase[i+2]
-		self.runLen[i+1] = self.runLen[i+2]
+	h.runLen[i] = len1 + len2
+	if i == h.stackSize-3 {
+		h.runBase[i+1] = h.runBase[i+2]
+		h.runLen[i+1] = h.runLen[i+2]
 	}
-	self.stackSize--
+	h.stackSize--
 
 	/*
 	 * Find where the first element of run2 goes in run1. Prior elements
 	 * in run1 can be ignored (because they're already in place).
 	 */
-	k, err := gallopRight(self.a[base2], self.a, base1, len1, 0, self.lt)
+	k, err := gallopRight(h.a[base2], h.a, base1, len1, 0, h.lt)
 	if err != nil {
 		return err
 	}
@@ -536,7 +536,7 @@ func (self *timSortHandler) mergeAt(i int) (err error) {
 	 * Find where the last element of run1 goes in run2. Subsequent elements
 	 * in run2 can be ignored (because they're already in place).
 	 */
-	len2, err = gallopLeft(self.a[base1+len1-1], self.a, base2, len2, len2-1, self.lt)
+	len2, err = gallopLeft(h.a[base1+len1-1], h.a, base2, len2, len2-1, h.lt)
 	if err != nil {
 		return
 	}
@@ -549,14 +549,14 @@ func (self *timSortHandler) mergeAt(i int) (err error) {
 
 	// Merge remaining runs, using tmp array with min(len1, len2) elements
 	if len1 <= len2 {
-		err = self.mergeLo(base1, len1, base2, len2)
+		err = h.mergeLo(base1, len1, base2, len2)
 		if err != nil {
-			return errors.New(fmt.Sprintf("mergeLo: %v", err))
+			return fmt.Errorf("mergeLo: %v", err)
 		}
 	} else {
-		err = self.mergeHi(base1, len1, base2, len2)
+		err = h.mergeHi(base1, len1, base2, len2)
 		if err != nil {
-			return errors.New(fmt.Sprintf("mergeHi: %v", err))
+			return fmt.Errorf("mergeHi: %v", err)
 		}
 	}
 	return
@@ -747,14 +747,14 @@ func gallopRight(key interface{}, a []interface{}, base, len, hint int, c LessTh
  *        (must be aBase + aLen)
  * @param len2  length of second run to be merged (must be > 0)
  */
-func (self *timSortHandler) mergeLo(base1, len1, base2, len2 int) (err error) {
+func (h *timSortHandler) mergeLo(base1, len1, base2, len2 int) (err error) {
 	if len1 <= 0 || len2 <= 0 || base1+len1 != base2 {
 		return errors.New(" len1 > 0 && len2 > 0 && base1 + len1 == base2")
 	}
 
 	// Copy first run into temp array
-	a := self.a // For performance
-	tmp := self.ensureCapacity(len1)
+	a := h.a // For performance
+	tmp := h.ensureCapacity(len1)
 
 	copy(tmp, a[base1:base1+len1])
 
@@ -777,8 +777,8 @@ func (self *timSortHandler) mergeLo(base1, len1, base2, len2 int) (err error) {
 		return
 	}
 
-	lt := self.lt               // Use local variable for performance
-	minGallop := self.minGallop //  "    "       "     "      "
+	lt := h.lt               // Use local variable for performance
+	minGallop := h.minGallop //  "    "       "     "      "
 
 outer:
 	for {
@@ -871,7 +871,7 @@ outer:
 				break outer
 			}
 			minGallop--
-			if count1 < _MIN_GALLOP && count2 < _MIN_GALLOP {
+			if count1 < minGallop && count2 < minGallop {
 				break
 			}
 		}
@@ -884,7 +884,7 @@ outer:
 	if minGallop < 1 {
 		minGallop = 1
 	}
-	self.minGallop = minGallop // Write back to field
+	h.minGallop = minGallop // Write back to field
 
 	if len1 == 1 {
 
@@ -894,7 +894,7 @@ outer:
 		copy(a[dest:dest+len2], a[cursor2:cursor2+len2])
 		a[dest+len2] = tmp[cursor1] //  Last elt of run 1 to end of merge
 	} else if len1 == 0 {
-		return errors.New("Comparison method violates its general contract!")
+		return errors.New("comparison method violates its general contract")
 	} else {
 		if len2 != 0 {
 			return errors.New("len2 == 0;")
@@ -919,14 +919,14 @@ outer:
  *        (must be aBase + aLen)
  * @param len2  length of second run to be merged (must be > 0)
  */
-func (self *timSortHandler) mergeHi(base1, len1, base2, len2 int) (err error) {
+func (h *timSortHandler) mergeHi(base1, len1, base2, len2 int) (err error) {
 	if len1 <= 0 || len2 <= 0 || base1+len1 != base2 {
 		return errors.New("len1 > 0 && len2 > 0 && base1 + len1 == base2;")
 	}
 
 	// Copy second run into temp array
-	a := self.a // For performance
-	tmp := self.ensureCapacity(len2)
+	a := h.a // For performance
+	tmp := h.ensureCapacity(len2)
 
 	copy(tmp, a[base2:base2+len2])
 
@@ -952,8 +952,8 @@ func (self *timSortHandler) mergeHi(base1, len1, base2, len2 int) (err error) {
 		return
 	}
 
-	lt := self.lt               // Use local variable for performance
-	minGallop := self.minGallop //  "    "       "     "      "
+	lt := h.lt               // Use local variable for performance
+	minGallop := h.minGallop //  "    "       "     "      "
 
 outer:
 	for {
@@ -1048,7 +1048,7 @@ outer:
 			}
 			minGallop--
 
-			if count1 < _MIN_GALLOP && count2 < _MIN_GALLOP {
+			if count1 < minGallop && count2 < minGallop {
 				break
 			}
 		}
@@ -1062,7 +1062,7 @@ outer:
 		minGallop = 1
 	}
 
-	self.minGallop = minGallop // Write back to field
+	h.minGallop = minGallop // Write back to field
 
 	if len2 == 1 {
 		if len1 <= 0 {
@@ -1074,7 +1074,7 @@ outer:
 		copy(a[dest+1:dest+1+len1], a[cursor1+1:cursor1+1+len1])
 		a[dest] = tmp[cursor2] // Move first elt of run2 to front of merge
 	} else if len2 == 0 {
-		return errors.New("Comparison method violates its general contract!")
+		return errors.New("comparison method violates its general contract")
 	} else {
 		if len1 != 0 {
 			return errors.New("len1 == 0;")
@@ -1097,8 +1097,8 @@ outer:
  * @param minCapacity the minimum required capacity of the tmp array
  * @return tmp, whether or not it grew
  */
-func (self *timSortHandler) ensureCapacity(minCapacity int) []interface{} {
-	if len(self.tmp) < minCapacity {
+func (h *timSortHandler) ensureCapacity(minCapacity int) []interface{} {
+	if len(h.tmp) < minCapacity {
 		// Compute smallest power of 2 > minCapacity
 		newSize := minCapacity
 		newSize |= newSize >> 1
@@ -1111,14 +1111,14 @@ func (self *timSortHandler) ensureCapacity(minCapacity int) []interface{} {
 		if newSize < 0 { // Not bloody likely!
 			newSize = minCapacity
 		} else {
-			ns := len(self.a) / 2
+			ns := len(h.a) / 2
 			if ns < newSize {
 				newSize = ns
 			}
 		}
 
-		self.tmp = make([]interface{}, newSize)
+		h.tmp = make([]interface{}, newSize)
 	}
 
-	return self.tmp
+	return h.tmp
 }
