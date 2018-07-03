@@ -248,7 +248,7 @@ func binarySortI(a []int, lo, hi, start int, lt IntLessThan) (err error) {
 		 *   pivot <  all in [right, start).
 		 */
 		for left < right {
-			mid := (left + right) / 2
+			mid := int(uint(left+right) >> 1)
 			if lt(pivot, a[mid]) {
 				right = mid
 			} else {
