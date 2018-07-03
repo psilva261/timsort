@@ -274,7 +274,7 @@ func binarySort(a []interface{}, lo, hi, start int, lt LessThan) (err error) {
 		 *   pivot <  all in [right, start).
 		 */
 		for left < right {
-			mid := (left + right) / 2
+			mid := int(uint(left+right) >> 1)
 			if lt(pivot, a[mid]) {
 				right = mid
 			} else {
@@ -434,7 +434,8 @@ func (self *timSortHandler) pushRun(runBase, runLen int) {
 func (self *timSortHandler) mergeCollapse() (err error) {
 	for self.stackSize > 1 {
 		n := self.stackSize - 2
-		if n > 0 && self.runLen[n-1] <= self.runLen[n]+self.runLen[n+1] {
+		if (n > 0 && self.runLen[n-1] <= self.runLen[n]+self.runLen[n+1]) ||
+			(n > 1 && self.runLen[n-2] <= self.runLen[n-1]+self.runLen[n]) {
 			if self.runLen[n-1] < self.runLen[n+1] {
 				n--
 			}
