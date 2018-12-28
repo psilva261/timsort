@@ -140,7 +140,7 @@ func benchmarkStandardSort(b *testing.B, size int, shape string) {
 		v := makeRecords(size, shape)
 
 		b.StartTimer()
-		sort.Sort(&v)
+		sort.Stable(&v)
 		b.StopTimer()
 	}
 }

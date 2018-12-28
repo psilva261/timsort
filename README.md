@@ -30,7 +30,7 @@ Inside the source directory, type
 	go test -test.bench=.*
 
 to run benchmarks. Each combination of input type/size is presented to timsort,
-and, for comparison, to the standard Go sort (sort.Sort).
+and, for comparison, to the standard Go sort (sort.Sort for ints or sort.Stable otherwise).
 See [BENCHMARKS.md][BENCHMARKS.md] for more info and some benchmarking results.
 
 ## Example
