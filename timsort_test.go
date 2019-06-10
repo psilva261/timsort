@@ -32,9 +32,24 @@ func IsSorted(a []interface{}, lessThan LessThan) bool {
 		if lessThan(a[i], prev) {
 			return false
 		}
+		prev = a[i]
 	}
 
 	return true
+}
+
+func TestIsSorted(t *testing.T) {
+	a := make([]interface{}, 5)
+	a[0] = val{3, 1}
+	a[1] = val{1, 5}
+	a[2] = val{2, 3}
+	a[3] = val{3, 4}
+	a[4] = val{4, 5}
+
+	if IsSorted(a, OrderLessThan) {
+		t.Error("Sorted")
+	}
+
 }
 
 // use this comparator for sorting
