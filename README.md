@@ -1,4 +1,4 @@
-# timsort [![Build Status](https://api.travis-ci.com/psilva261/timsort.svg?branch=master)](https://travis-ci.org/psilva261/timsort)
+# timsort [![Build Status](https://api.travis-ci.com/psilva261/timsort.svg?branch=master)](https://travis-ci.com/psilva261/timsort)
 
 **timsort** is a Go implementation of Tim Peters's mergesort
 sorting algorithm.
