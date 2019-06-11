@@ -281,15 +281,6 @@ func TestRandom1MTS(t *testing.T) {
 	}
 }
 
-type person struct {
-	ssn  int
-	name string
-}
-
-func (p *person) Less(o interface{}) bool {
-	return p.ssn < o.(*person).ssn
-}
-
 const (
 	_Sawtooth = iota
 	_Rand
@@ -379,7 +370,10 @@ func TestBentleyMcIlroy(t *testing.T) {
 						}
 						// SortInts is known to be correct
 						// because mode Sort runs after mode _Copy.
-						Sort(mdata, KeyLessThan)
+						err := Sort(mdata, KeyLessThan)
+						if err != nil {
+							t.Fatalf("Sort: %v", err)
+						}
 					case _Dither:
 						for i := 0; i < n; i++ {
 							mdata[i] = val{data[i].(val).key + i%5, i}
@@ -503,7 +497,10 @@ func TestBentleyMcIlroyTS(t *testing.T) {
 						}
 						// SortInts is known to be correct
 						// because mode Sort runs after mode _Copy.
-						Sort(mdata, KeyLessThan)
+						err := Sort(mdata, KeyLessThan)
+						if err != nil {
+							t.Fatalf("Sort: %v", err)
+						}
 					case _Dither:
 						for i := 0; i < n; i++ {
 							mdata[i] = val{data[i].(val).key + i%5, i}

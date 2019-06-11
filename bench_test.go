@@ -30,19 +30,6 @@ func (s *RecordSlice) Less(i, j int) bool {
 	return (*s)[i].key < (*s)[j].key
 }
 
-func LessThanByKeyByOrder(a, b interface{}) bool {
-	aa := a.(*record)
-	bb := b.(*record)
-
-	if aa.key < bb.key {
-		return true
-	} else if aa.key == bb.key {
-		return aa.order < bb.order
-	}
-
-	return false
-}
-
 func makeVector(size int, shape string) (v records) {
 	v = make(records, size)
 	switch shape {
@@ -116,8 +103,11 @@ func benchmarkTimsort(b *testing.B, size int, shape string) {
 		v := makeVector(size, shape)
 
 		b.StartTimer()
-		Sort(v, LessThanByKey)
+		err := Sort(v, LessThanByKey)
 		b.StopTimer()
+		if err != nil {
+			b.Fatalf("Sort: %v", err)
+		}
 	}
 }
 
@@ -128,8 +118,11 @@ func benchmarkTimsortInterface(b *testing.B, size int, shape string) {
 		v := makeRecords(size, shape)
 
 		b.StartTimer()
-		TimSort(&v)
+		err := TimSort(&v)
 		b.StopTimer()
+		if err != nil {
+			b.Fatalf("TimSort: %v", err)
+		}
 	}
 }
 
