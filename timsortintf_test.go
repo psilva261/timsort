@@ -3,6 +3,7 @@ package timsort
 import (
 	"fmt"
 	"math/rand"
+	"sort"
 	"testing"
 )
 
@@ -214,4 +215,15 @@ func TestBentleyMcIlroyTS(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestStrings1TS(t *testing.T) {
+	a := []string{
+		"ef",
+		"abc",
+		"aaa",
+		"de",
+		"ed",
+	}
+	TimSort(sort.StringSlice(a))
 }
