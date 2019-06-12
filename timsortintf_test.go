@@ -225,5 +225,7 @@ func TestStrings1TS(t *testing.T) {
 		"de",
 		"ed",
 	}
-	TimSort(sort.StringSlice(a))
+	if err := TimSort(sort.StringSlice(a)); err != nil {
+		t.Fatalf("TimSort: %v", err)
+	}
 }

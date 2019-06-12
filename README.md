@@ -33,7 +33,9 @@ to run benchmarks. Each combination of input type/size is presented to timsort,
 and, for comparison, to the standard Go sort (sort.Sort for ints or sort.Stable otherwise).
 See [BENCHMARKS.md][BENCHMARKS.md] for more info and some benchmarking results.
 
-## Example
+## Examples
+
+### Explicit "less" function
 
 	package main
 
@@ -69,6 +71,24 @@ See [BENCHMARKS.md][BENCHMARKS.md] for more info and some benchmarking results.
 		timsort.Sort(db, ByName)
 		fmt.Printf("sorted by name: %v\n", db)
 	}
+
+### As drop-in replacement for sort.Sort
+
+    package main
+
+	import (
+		"github.com/psilva261/timsort"
+		"fmt"
+		"sort"
+    )
+
+    func main() {
+		a := []string{"c", "a", "b"}
+		if err := timsort.TimSort(sort.StringSlice(a)); err != nil {
+				panic(err.Error())
+		}
+		fmt.Printf("sorted array: %+v\n", a)
+    }
 
 [listsort]: http://svn.python.org/projects/python/trunk/Objects/listsort.txt
 [BENCHMARKS.md]: http://github.com/psilva261/timsort/blob/master/BENCHMARKS.md
