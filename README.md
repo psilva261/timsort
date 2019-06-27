@@ -35,6 +35,24 @@ See [BENCHMARKS.md][BENCHMARKS.md] for more info and some benchmarking results.
 
 ## Examples
 
+### As drop-in replacement for sort.Sort
+
+    package main
+
+	import (
+		"github.com/psilva261/timsort"
+		"fmt"
+		"sort"
+    )
+
+    func main() {
+		l := []string{"c", "a", "b"}
+		if err := timsort.TimSort(sort.StringSlice(l)); err != nil {
+				panic(err.Error())
+		}
+		fmt.Printf("sorted array: %+v\n", l)
+    }
+
 ### Explicit "less" function
 
 	package main
@@ -71,24 +89,6 @@ See [BENCHMARKS.md][BENCHMARKS.md] for more info and some benchmarking results.
 		timsort.Sort(db, ByName)
 		fmt.Printf("sorted by name: %v\n", db)
 	}
-
-### As drop-in replacement for sort.Sort
-
-    package main
-
-	import (
-		"github.com/psilva261/timsort"
-		"fmt"
-		"sort"
-    )
-
-    func main() {
-		a := []string{"c", "a", "b"}
-		if err := timsort.TimSort(sort.StringSlice(a)); err != nil {
-				panic(err.Error())
-		}
-		fmt.Printf("sorted array: %+v\n", a)
-    }
 
 [listsort]: http://svn.python.org/projects/python/trunk/Objects/listsort.txt
 [BENCHMARKS.md]: http://github.com/psilva261/timsort/blob/master/BENCHMARKS.md
