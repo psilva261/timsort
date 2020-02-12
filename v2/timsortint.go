@@ -147,7 +147,6 @@ func Ints(a []int, lt IntLessThan) {
 
 	ts.mergeForceCollapse()
 
-	return
 }
 
 /**
@@ -215,7 +214,6 @@ func binarySortI(a []int, lo, hi, start int, lt IntLessThan) {
 		}
 		a[left] = pivot
 	}
-	return
 }
 
 /**
@@ -320,7 +318,6 @@ func (hi *timSortHandlerI) mergeCollapse() {
 			break // Invariant is established
 		}
 	}
-	return
 }
 
 /**
@@ -335,7 +332,6 @@ func (hi *timSortHandlerI) mergeForceCollapse() {
 		}
 		hi.mergeAt(n)
 	}
-	return
 }
 
 /**
@@ -389,7 +385,6 @@ func (hi *timSortHandlerI) mergeAt(i int) {
 	} else {
 		hi.mergeHi(base1, len1, base2, len2)
 	}
-	return
 }
 
 /**
@@ -686,7 +681,6 @@ outer:
 	} else {
 		copy(a[dest:dest+len1], tmp[cursor1:cursor1+len1])
 	}
-	return
 }
 
 /**
@@ -838,7 +832,6 @@ outer:
 	} else {
 		copy(a[dest-(len2-1):dest+1], tmp)
 	}
-	return
 }
 
 /**

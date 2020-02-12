@@ -410,7 +410,6 @@ func (h *timSortHandler) mergeForceCollapse() {
 		}
 		h.mergeAt(n)
 	}
-	return
 }
 
 /**
@@ -464,7 +463,6 @@ func (h *timSortHandler) mergeAt(i int) {
 	} else {
 		h.mergeHi(base1, len1, base2, len2)
 	}
-	return
 }
 
 /**
@@ -761,7 +759,6 @@ outer:
 	} else {
 		copy(a[dest:dest+len1], tmp[cursor1:cursor1+len1])
 	}
-	return
 }
 
 /**
@@ -913,7 +910,6 @@ outer:
 	} else {
 		copy(a[dest-(len2-1):dest+1], tmp)
 	}
-	return
 }
 
 /**
