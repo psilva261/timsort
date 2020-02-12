@@ -127,8 +127,35 @@ func TestSmokeStability(t *testing.T) {
 	}
 }
 
+func Test0(t *testing.T) {
+	a := makeTestArray(0)
+
+	Sort(a, KeyLessThan)
+	if !IsSorted(a, KeyOrderLessThan) {
+		t.Error("not sorted")
+	}
+}
+
+func Test1(t *testing.T) {
+	a := makeTestArray(1)
+
+	Sort(a, KeyLessThan)
+	if !IsSorted(a, KeyOrderLessThan) {
+		t.Error("not sorted")
+	}
+}
+
 func Test1K(t *testing.T) {
 	a := makeTestArray(1024)
+
+	Sort(a, KeyLessThan)
+	if !IsSorted(a, KeyOrderLessThan) {
+		t.Error("not sorted")
+	}
+}
+
+func Test100K(t *testing.T) {
+	a := makeTestArray(100 * 1024)
 
 	Sort(a, KeyLessThan)
 	if !IsSorted(a, KeyOrderLessThan) {

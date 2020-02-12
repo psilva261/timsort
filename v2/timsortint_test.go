@@ -49,8 +49,35 @@ func TestSmokeI(t *testing.T) {
 	}
 }
 
+func Test0I(t *testing.T) {
+	a := makeTestArrayI(1)
+
+	Ints(a, intLessThan)
+	if !IsSortedI(a, intLessThan) {
+		t.Error("not sorted")
+	}
+}
+
+func Test1I(t *testing.T) {
+	a := makeTestArrayI(1)
+
+	Ints(a, intLessThan)
+	if !IsSortedI(a, intLessThan) {
+		t.Error("not sorted")
+	}
+}
+
 func Test1KI(t *testing.T) {
 	a := makeTestArrayI(1024)
+
+	Ints(a, intLessThan)
+	if !IsSortedI(a, intLessThan) {
+		t.Error("not sorted")
+	}
+}
+
+func Test100KI(t *testing.T) {
+	a := makeTestArrayI(100 * 1024)
 
 	Ints(a, intLessThan)
 	if !IsSortedI(a, intLessThan) {
