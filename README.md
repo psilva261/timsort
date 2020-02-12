@@ -13,7 +13,7 @@ which, in turn, was based on the [original code by Tim Peters][listsort].
 
 ## Installation
 
-	$ go get github.com/psilva261/timsort
+	$ go get -u github.com/psilva261/timsort/v2
 
 ## Testing
 
@@ -39,17 +39,15 @@ See [BENCHMARKS.md][BENCHMARKS.md] for more info and some benchmarking results.
 
     package main
 
-	import (
-		"github.com/psilva261/timsort"
+    import (
+		"github.com/psilva261/timsort/v2"
 		"fmt"
 		"sort"
     )
 
     func main() {
 		l := []string{"c", "a", "b"}
-		if err := timsort.TimSort(sort.StringSlice(l)); err != nil {
-				panic(err.Error())
-		}
+		timsort.TimSort(sort.StringSlice(l)
 		fmt.Printf("sorted array: %+v\n", l)
     }
 
@@ -58,7 +56,7 @@ See [BENCHMARKS.md][BENCHMARKS.md] for more info and some benchmarking results.
 	package main
 
 	import (
-		"github.com/psilva261/timsort"
+		"github.com/psilva261/timsort/v2"
 		"fmt"
 	)
 
