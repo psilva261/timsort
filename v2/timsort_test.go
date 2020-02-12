@@ -172,6 +172,15 @@ func Test1M(t *testing.T) {
 	}
 }
 
+func TestConst(t *testing.T) {
+	a := []interface{}{val{1, 1}, val{1, 1}, val{1, 1}}
+
+	Sort(a, KeyLessThan)
+	if !IsSorted(a, KeyOrderLessThan) {
+		t.Error("not sorted")
+	}
+}
+
 func makeRandomArray(size int) []interface{} {
 	a := make([]interface{}, size)
 

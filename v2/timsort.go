@@ -199,8 +199,6 @@ func Sort(a []interface{}, lt LessThan) {
 	}
 
 	ts.mergeForceCollapse()
-
-	return
 }
 
 /**
@@ -268,7 +266,6 @@ func binarySort(a []interface{}, lo, hi, start int, lt LessThan) {
 		}
 		a[left] = pivot
 	}
-	return
 }
 
 /**
@@ -399,7 +396,6 @@ func (h *timSortHandler) mergeCollapse() {
 			break // Invariant is established
 		}
 	}
-	return
 }
 
 /**
