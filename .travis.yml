@@ -1,5 +1,9 @@
 language: go
 
+arch:
+  - amd64
+  - arm64
+
 before_script:
   - go get github.com/golangci/golangci-lint/cmd/golangci-lint
   - go install github.com/golangci/golangci-lint/cmd/golangci-lint
