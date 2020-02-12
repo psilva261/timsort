@@ -1,0 +1,2 @@
+ignore:
+  - "*.go" # ignore old v1 for coverage; instead check v2
