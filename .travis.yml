@@ -6,7 +6,7 @@ before_script:
 
 script:
   - golangci-lint run v2
-  - go test -v -race -coverprofile=coverage.txt -covermode=atomic
+  - go test -v -race -coverprofile=coverage.txt -covermode=atomic ./v2
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
