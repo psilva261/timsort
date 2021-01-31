@@ -25,7 +25,7 @@ benchmark_table.sh:
     Sorted1M:     4238347       (8991637)     4125454       (8718271)     4199811       (8524249)     
     RevSorted1M:  6498133       (122685926)   6274050       (113631337)   6218917       (117388612)   
     Xor1M:        103830787     (226644420)   97834093      (232690160)   100051210     (228723419)   
-    Random1M:     348764192     (663024283)   367589312     (690514504)   377960208     (733221145) ```
+    Random1M:     348764192     (663024283)   367589312     (690514504)   377960208     (733221145)
 
 Timsort is crazy fast on patterned inputs, but even for random input it is much faster than stable sort in Go. Exception is a fully sorted input, where Go's stable sort greatly benefits on small inputs because it uses insertion sort in implementation.
 Disclaimer: The above benchmark applies only to one specific type of data element (`record` structure as defined in [bench_test.go][bench_test.go]). For other data types results may vary. 
@@ -48,7 +48,7 @@ benchmarkint_table.sh:
     Sorted1M:     2612806       (63640085)    2657223       (66381050)    2782516       (65576825)    
     RevSorted1M:  3236216       (65236079)    3241050       (62996742)    3445819       (66550484)    
     Xor1M:        62054181      (61609233)    58021830      (59778514)    57094210      (65384476)    
-    Random1M:     212171678     (185525353)   199493986     (184466052)   223314023     (188326317)```
+    Random1M:     212171678     (185525353)   199493986     (184466052)   223314023     (188326317)
 
 If stable sort is not required then default sort in Go (quicksort) gives better results for random inputs.
 
