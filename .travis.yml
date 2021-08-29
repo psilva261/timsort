@@ -4,10 +4,7 @@ arch:
   - amd64
 
 go:
-  - 1.14.3
-
-env:
-  - GO111MODULE=on
+  - 1.17
 
 before_script:
   - go get github.com/golangci/golangci-lint/cmd/golangci-lint
