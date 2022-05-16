@@ -1,14 +1,16 @@
 # timsort [![Build Status](https://api.travis-ci.com/psilva261/timsort.svg?branch=master)](https://travis-ci.com/psilva261/timsort) [![codecov](https://codecov.io/gh/psilva261/timsort/branch/master/graph/badge.svg)](https://codecov.io/gh/psilva261/timsort)
 
 **timsort** is a Go implementation of Tim Peters's mergesort
-sorting algorithm.
+sorting algorithm. It's stable and runs in O(n) time for presorted
+inputs and O(n log n) otherwise.
 
-For many input types it is 2-3 times faster than Go's built-in sorting.
+For many real world inputs it is 2-3 times faster than Go's built-in sorting.
 
 The main drawback of this sort method is that it is not in-place (as any
 mergesort), and may put extra strain on garbage collector.
 
-This implementation was derived from Java's TimSort object by Josh Bloch,
+This implementation was ported to Go by Mike Kroutikov
+and derived from Java's TimSort object by Josh Bloch,
 which, in turn, was based on the [original code by Tim Peters][listsort].
 
 ## Installation
