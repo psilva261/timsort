@@ -4,7 +4,7 @@ arch:
   - amd64
 
 go:
-  - 1.17
+  - 1.19
 
 before_script:
   - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
