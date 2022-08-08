@@ -108,6 +108,7 @@ func Ints(a []int, lt IntLessThan) {
 		initRunLen := countRunAndMakeAscendingI(a, lo, hi, lt)
 
 		binarySortI(a, lo, hi, lo+initRunLen, lt)
+		return
 	}
 
 	/**

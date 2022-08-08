@@ -162,6 +162,7 @@ func Sort(a []interface{}, lt LessThan) {
 		initRunLen := countRunAndMakeAscending(a, lo, hi, lt)
 
 		binarySort(a, lo, hi, lo+initRunLen, lt)
+		return
 	}
 
 	/**
