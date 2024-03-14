@@ -10,10 +10,10 @@ type record struct {
 	key, order int
 }
 
-type records []interface{}
+type records []record
 
-func LessThanByKey(a, b interface{}) bool {
-	return a.(*record).key < b.(*record).key
+func LessThanByKey(a, b record) bool {
+	return a.key < b.key
 }
 
 type RecordSlice []record
@@ -36,24 +36,24 @@ func makeVector(size int, shape string) (v records) {
 
 	case "xor":
 		for i := 0; i < size; i++ {
-			v[i] = &record{0xff & (i ^ 0xab), i}
+			v[i] = record{0xff & (i ^ 0xab), i}
 		}
 
 	case "sorted":
 		for i := 0; i < size; i++ {
-			v[i] = &record{i, i}
+			v[i] = record{i, i}
 		}
 
 	case "revsorted":
 		for i := 0; i < size; i++ {
-			v[i] = &record{size - i, i}
+			v[i] = record{size - i, i}
 		}
 
 	case "random":
 		rand.Seed(1)
 
 		for i := 0; i < size; i++ {
-			v[i] = &record{rand.Int(), i}
+			v[i] = record{rand.Int(), i}
 		}
 
 	default:

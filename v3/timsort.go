@@ -1,3 +1,5 @@
+package timsort
+
 // Package timsort provides fast stable sort, uses external comparator.
 //
 // A stable, adaptive, iterative mergesort that requires far fewer than
@@ -14,7 +16,6 @@
 // http://svn.python.org/projects/python/trunk/Objects/listsort.txt
 //
 // Mike K.
-package timsort
 
 const (
 	/**
@@ -55,19 +56,19 @@ const (
 )
 
 // LessThan is Delegate type that sorting uses as a comparator
-type LessThan func(a, b interface{}) bool
+type LessThan[T any] func(a, b T) bool
 
-type timSortHandler struct {
+type timSortHandler[T any] struct {
 
 	/**
 	 * The array being sorted.
 	 */
-	a []interface{}
+	a []T
 
 	/**
 	 * The comparator for this sort.
 	 */
-	lt LessThan
+	lt LessThan[T]
 
 	/**
 	 * This controls when we get *into* galloping mode.  It is initialized
@@ -79,7 +80,7 @@ type timSortHandler struct {
 	/**
 	 * Temp storage for merges.
 	 */
-	tmp []interface{} // Actual runtime type will be Object[], regardless of T
+	tmp []T // Actual runtime type will be Object[], regardless of T
 
 	/**
 	 * A stack of pending runs yet to be merged.  Run i starts at
@@ -102,8 +103,8 @@ type timSortHandler struct {
  * @param a the array to be sorted
  * @param c the comparator to determine the order of the sort
  */
-func newTimSort(a []interface{}, lt LessThan) (h *timSortHandler) {
-	h = new(timSortHandler)
+func newTimSort[T any](a []T, lt LessThan[T]) (h *timSortHandler[T]) {
+	h = &timSortHandler[T]{}
 
 	h.a = a
 	h.lt = lt
@@ -118,7 +119,7 @@ func newTimSort(a []interface{}, lt LessThan) (h *timSortHandler) {
 		tmpSize = len / 2
 	}
 
-	h.tmp = make([]interface{}, tmpSize)
+	h.tmp = make([]T, tmpSize)
 
 	/*
 	 * Allocate runs-to-be-merged stack (which cannot be expanded).  The
@@ -148,7 +149,7 @@ func newTimSort(a []interface{}, lt LessThan) (h *timSortHandler) {
 }
 
 // Sort an array using the provided comparator
-func Sort(a []interface{}, lt LessThan) {
+func Sort[T any](a []T, lt LessThan[T]) {
 	lo := 0
 	hi := len(a)
 	nRemaining := hi
@@ -220,7 +221,7 @@ func Sort(a []interface{}, lt LessThan) {
  *        not already known to be sorted (@code lo <= start <= hi}
  * @param c comparator to used for the sort
  */
-func binarySort(a []interface{}, lo, hi, start int, lt LessThan) {
+func binarySort[T any](a []T, lo, hi, start int, lt LessThan[T]) {
 	if start == lo {
 		start++
 	}
@@ -269,32 +270,33 @@ func binarySort(a []interface{}, lo, hi, start int, lt LessThan) {
 	}
 }
 
-/**
-  * Returns the length of the run beginning at the specified position in
-  * the specified array and reverses the run if it is descending (ensuring
-  * that the run will always be ascending when the method returns).
-  *
-  * A run is the longest ascending sequence with:
-  *
-  *    a[lo] <= a[lo + 1] <= a[lo + 2] <= ...
-  *
-  * or the longest descending sequence with:
-  *
-  *    a[lo] >  a[lo + 1] >  a[lo + 2] >  ...
-  *
-  * For its intended use in a stable mergesort, the strictness of the
-  * definition of "descending" is needed so that the call can safely
-  * reverse a descending sequence without violating stability.
-  *
-  * @param a the array in which a run is to be counted and possibly reversed
-  * @param lo index of the first element in the run
-  * @param hi index after the last element that may be contained in the run.
-           It is required that @code{lo < hi}.
-  * @param c the comparator to used for the sort
-  * @return  the length of the run beginning at the specified position in
-  *          the specified array
+/*
+*
+  - Returns the length of the run beginning at the specified position in
+  - the specified array and reverses the run if it is descending (ensuring
+  - that the run will always be ascending when the method returns).
+    *
+  - A run is the longest ascending sequence with:
+    *
+  - a[lo] <= a[lo + 1] <= a[lo + 2] <= ...
+    *
+  - or the longest descending sequence with:
+    *
+  - a[lo] >  a[lo + 1] >  a[lo + 2] >  ...
+    *
+  - For its intended use in a stable mergesort, the strictness of the
+  - definition of "descending" is needed so that the call can safely
+  - reverse a descending sequence without violating stability.
+    *
+  - @param a the array in which a run is to be counted and possibly reversed
+  - @param lo index of the first element in the run
+  - @param hi index after the last element that may be contained in the run.
+    It is required that @code{lo < hi}.
+  - @param c the comparator to used for the sort
+  - @return  the length of the run beginning at the specified position in
+  - the specified array
 */
-func countRunAndMakeAscending(a []interface{}, lo, hi int, lt LessThan) int {
+func countRunAndMakeAscending[T any](a []T, lo, hi int, lt LessThan[T]) int {
 	runHi := lo + 1
 	if runHi == hi {
 		return 1
@@ -324,7 +326,7 @@ func countRunAndMakeAscending(a []interface{}, lo, hi int, lt LessThan) int {
  * @param lo the index of the first element in the range to be reversed
  * @param hi the index after the last element in the range to be reversed
  */
-func reverseRange(a []interface{}, lo, hi int) {
+func reverseRange[T any](a []T, lo, hi int) {
 	hi--
 	for lo < hi {
 		a[lo], a[hi] = a[hi], a[lo]
@@ -365,7 +367,7 @@ func minRunLength(n int) int {
  * @param runBase index of the first element in the run
  * @param runLen  the number of elements in the run
  */
-func (h *timSortHandler) pushRun(runBase, runLen int) {
+func (h *timSortHandler[T]) pushRun(runBase, runLen int) {
 	h.runBase[h.stackSize] = runBase
 	h.runLen[h.stackSize] = runLen
 	h.stackSize++
@@ -382,7 +384,7 @@ func (h *timSortHandler) pushRun(runBase, runLen int) {
  * so the invariants are guaranteed to hold for i < stackSize upon
  * entry to the method.
  */
-func (h *timSortHandler) mergeCollapse() {
+func (h *timSortHandler[T]) mergeCollapse() {
 	for h.stackSize > 1 {
 		n := h.stackSize - 2
 		if (n > 0 && h.runLen[n-1] <= h.runLen[n]+h.runLen[n+1]) ||
@@ -403,7 +405,7 @@ func (h *timSortHandler) mergeCollapse() {
  * Merges all runs on the stack until only one remains.  This method is
  * called once, to complete the sort.
  */
-func (h *timSortHandler) mergeForceCollapse() {
+func (h *timSortHandler[T]) mergeForceCollapse() {
 	for h.stackSize > 1 {
 		n := h.stackSize - 2
 		if n > 0 && h.runLen[n-1] < h.runLen[n+1] {
@@ -420,7 +422,7 @@ func (h *timSortHandler) mergeForceCollapse() {
  *
  * @param i stack index of the first of the two runs to merge
  */
-func (h *timSortHandler) mergeAt(i int) {
+func (h *timSortHandler[T]) mergeAt(i int) {
 	base1 := h.runBase[i]
 	len1 := h.runLen[i]
 	base2 := h.runBase[i+1]
@@ -484,7 +486,7 @@ func (h *timSortHandler) mergeAt(i int) {
  *    the first k elements of a should precede key, and the last n - k
  *    should follow it.
  */
-func gallopLeft(key interface{}, a []interface{}, base, len, hint int, c LessThan) int {
+func gallopLeft[T any](key T, a []T, base, len, hint int, c LessThan[T]) int {
 	lastOfs := 0
 	ofs := 1
 
@@ -557,7 +559,7 @@ func gallopLeft(key interface{}, a []interface{}, base, len, hint int, c LessTha
  * @param c the comparator used to order the range, and to search
  * @return the int k,  0 <= k <= n such that a[b + k - 1] <= key < a[b + k]
  */
-func gallopRight(key interface{}, a []interface{}, base, len, hint int, c LessThan) int {
+func gallopRight[T any](key T, a []T, base, len, hint int, c LessThan[T]) int {
 	ofs := 1
 	lastOfs := 0
 	if c(key, a[base+hint]) {
@@ -631,7 +633,7 @@ func gallopRight(key interface{}, a []interface{}, base, len, hint int, c LessTh
  *        (must be aBase + aLen)
  * @param len2  length of second run to be merged (must be > 0)
  */
-func (h *timSortHandler) mergeLo(base1, len1, base2, len2 int) {
+func (h *timSortHandler[T]) mergeLo(base1, len1, base2, len2 int) {
 	// Copy first run into temp array
 	a := h.a // For performance
 	tmp := h.ensureCapacity(len1)
@@ -773,7 +775,7 @@ outer:
  *        (must be aBase + aLen)
  * @param len2  length of second run to be merged (must be > 0)
  */
-func (h *timSortHandler) mergeHi(base1, len1, base2, len2 int) {
+func (h *timSortHandler[T]) mergeHi(base1, len1, base2, len2 int) {
 	// Copy second run into temp array
 	a := h.a // For performance
 	tmp := h.ensureCapacity(len2)
@@ -921,7 +923,7 @@ outer:
  * @param minCapacity the minimum required capacity of the tmp array
  * @return tmp, whether or not it grew
  */
-func (h *timSortHandler) ensureCapacity(minCapacity int) []interface{} {
+func (h *timSortHandler[T]) ensureCapacity(minCapacity int) []T {
 	if len(h.tmp) < minCapacity {
 		// Compute smallest power of 2 > minCapacity
 		newSize := minCapacity
@@ -941,7 +943,7 @@ func (h *timSortHandler) ensureCapacity(minCapacity int) []interface{} {
 			}
 		}
 
-		h.tmp = make([]interface{}, newSize)
+		h.tmp = make([]T, newSize)
 	}
 
 	return h.tmp

@@ -10,8 +10,8 @@ type val struct {
 	key, order int
 }
 
-func makeTestArray(size int) []interface{} {
-	a := make([]interface{}, size)
+func makeTestArray(size int) []val {
+	a := make([]val, size)
 
 	for i := 0; i < size; i++ {
 		a[i] = val{i & 0xeeeeee, i}
@@ -20,7 +20,7 @@ func makeTestArray(size int) []interface{} {
 	return a
 }
 
-func IsSorted(a []interface{}, lessThan LessThan) bool {
+func IsSorted[T any](a []T, lessThan LessThan[T]) bool {
 	len := len(a)
 
 	if len < 2 {
@@ -39,12 +39,13 @@ func IsSorted(a []interface{}, lessThan LessThan) bool {
 }
 
 func TestIsSorted(t *testing.T) {
-	a := make([]interface{}, 5)
-	a[0] = val{3, 1}
-	a[1] = val{1, 5}
-	a[2] = val{2, 3}
-	a[3] = val{3, 4}
-	a[4] = val{4, 5}
+	a := []val{
+		{3, 1},
+		{1, 5},
+		{2, 3},
+		{3, 4},
+		{4, 5},
+	}
 
 	if IsSorted(a, OrderLessThan) {
 		t.Error("Sorted")
@@ -53,11 +54,11 @@ func TestIsSorted(t *testing.T) {
 }
 
 // use this comparator for sorting
-func KeyLessThan(a, b interface{}) bool {
-	return a.(val).key < b.(val).key
+func KeyLessThan(a, b val) bool {
+	return a.key < b.key
 }
 
-type KeyLessThanSlice []interface{}
+type KeyLessThanSlice []val
 
 func (s KeyLessThanSlice) Len() int {
 	return len(s)
@@ -68,26 +69,26 @@ func (s KeyLessThanSlice) Swap(i, j int) {
 }
 
 func (s KeyLessThanSlice) Less(i, j int) bool {
-	return s[i].(val).key < s[j].(val).key
+	return s[i].key < s[j].key
 }
 
 // use this comparator to validate sorted data (and prove its stable)
-func KeyOrderLessThan(a, b interface{}) bool {
-	if a.(val).key < b.(val).key {
+func KeyOrderLessThan(a, b val) bool {
+	if a.key < b.key {
 		return true
-	} else if a.(val).key == b.(val).key {
-		return a.(val).order < b.(val).order
+	} else if a.key == b.key {
+		return a.order < b.order
 	}
 
 	return false
 }
 
 // use this comparator to restore the original order of elements (by sorting on order field)
-func OrderLessThan(a, b interface{}) bool {
-	return a.(val).order < b.(val).order
+func OrderLessThan(a, b val) bool {
+	return a.order < b.order
 }
 
-type OrderLessThanSlice []interface{}
+type OrderLessThanSlice []val
 
 func (s OrderLessThanSlice) Len() int {
 	return len(s)
@@ -98,14 +99,15 @@ func (s OrderLessThanSlice) Swap(i, j int) {
 }
 
 func (s OrderLessThanSlice) Less(i, j int) bool {
-	return s[i].(val).order < s[j].(val).order
+	return s[i].order < s[j].order
 }
 
 func TestSmoke(t *testing.T) {
-	a := make([]interface{}, 3)
-	a[0] = val{3, 0}
-	a[1] = val{1, 1}
-	a[2] = val{2, 2}
+	a := []val{
+		{3, 0},
+		{1, 1},
+		{2, 2},
+	}
 
 	Sort(a, KeyLessThan)
 
@@ -115,10 +117,11 @@ func TestSmoke(t *testing.T) {
 }
 
 func TestSmokeStability(t *testing.T) {
-	a := make([]interface{}, 3)
-	a[0] = val{3, 0}
-	a[1] = val{2, 1}
-	a[2] = val{2, 2}
+	a := []val{
+		{3, 0},
+		{2, 1},
+		{2, 2},
+	}
 
 	Sort(a, KeyLessThan)
 
@@ -128,7 +131,7 @@ func TestSmokeStability(t *testing.T) {
 }
 
 func Test0(t *testing.T) {
-	a := makeTestArray(0)
+	a := []val{}
 
 	Sort(a, KeyLessThan)
 	if !IsSorted(a, KeyOrderLessThan) {
@@ -173,7 +176,11 @@ func Test1M(t *testing.T) {
 }
 
 func TestConst(t *testing.T) {
-	a := []interface{}{val{1, 1}, val{1, 1}, val{1, 1}}
+	a := []val{
+		{1, 1},
+		{1, 1},
+		{1, 1},
+	}
 
 	Sort(a, KeyLessThan)
 	if !IsSorted(a, KeyOrderLessThan) {
@@ -181,8 +188,8 @@ func TestConst(t *testing.T) {
 	}
 }
 
-func makeRandomArray(size int) []interface{} {
-	a := make([]interface{}, size)
+func makeRandomArray(size int) []val {
+	a := make([]val, size)
 
 	for i := 0; i < size; i++ {
 		a[i] = val{rand.Intn(100), i}
@@ -191,15 +198,15 @@ func makeRandomArray(size int) []interface{} {
 	return a
 }
 
-func Equals(a, b interface{}) bool {
-	return a.(val).key == b.(val).key && a.(val).order == b.(val).order
+func Equals(a, b val) bool {
+	return a.key == b.key && a.order == b.order
 }
 
 func TestRandom1M(t *testing.T) {
 	size := 1024 * 1024
 
 	a := makeRandomArray(size)
-	b := make([]interface{}, size)
+	b := make([]val, size)
 	copy(b, a)
 
 	Sort(a, KeyLessThan)
@@ -240,8 +247,8 @@ func TestBentleyMcIlroy(t *testing.T) {
 	sizes := []int{100, 1023, 1024, 1025}
 	dists := []string{"sawtooth", "rand", "stagger", "plateau", "shuffle"}
 	modes := []string{"copy", "reverse", "reverse1", "reverse2", "sort", "dither"}
-	tmp1 := make([]interface{}, 1025*1025)
-	tmp2 := make([]interface{}, 1025*1025)
+	tmp1 := make([]val, 1025*1025)
+	tmp2 := make([]val, 1025*1025)
 	for ni := 0; ni < len(sizes); ni++ {
 		n := sizes[ni]
 		for m := 1; m < 2*n; m *= 2 {
@@ -279,25 +286,25 @@ func TestBentleyMcIlroy(t *testing.T) {
 					switch mode {
 					case _Copy:
 						for i := 0; i < n; i++ {
-							mdata[i] = val{data[i].(val).key, i}
+							mdata[i] = val{data[i].key, i}
 						}
 					case _Reverse:
 						for i := 0; i < n; i++ {
-							mdata[i] = val{data[n-i-1].(val).key, i}
+							mdata[i] = val{data[n-i-1].key, i}
 						}
 					case _ReverseFirstHalf:
 						for i := 0; i < n/2; i++ {
-							mdata[i] = val{data[n/2-i-1].(val).key, i}
+							mdata[i] = val{data[n/2-i-1].key, i}
 						}
 						for i := n / 2; i < n; i++ {
-							mdata[i] = val{data[i].(val).key, i}
+							mdata[i] = val{data[i].key, i}
 						}
 					case _ReverseSecondHalf:
 						for i := 0; i < n/2; i++ {
-							mdata[i] = val{data[i].(val).key, i}
+							mdata[i] = val{data[i].key, i}
 						}
 						for i := n / 2; i < n; i++ {
-							mdata[i] = val{data[n-(i-n/2)-1].(val).key, i}
+							mdata[i] = val{data[n-(i-n/2)-1].key, i}
 						}
 					case _Sorted:
 						for i := 0; i < n; i++ {
@@ -308,17 +315,17 @@ func TestBentleyMcIlroy(t *testing.T) {
 						Sort(mdata, KeyLessThan)
 					case _Dither:
 						for i := 0; i < n; i++ {
-							mdata[i] = val{data[i].(val).key + i%5, i}
+							mdata[i] = val{data[i].key + i%5, i}
 						}
 					}
 
 					desc := fmt.Sprintf("n=%d m=%d dist=%s mode=%s", n, m, dists[dist], modes[mode])
 
 					for i := 0; i < len(mdata); i++ {
-						mdata[i] = val{mdata[i].(val).key, i}
+						mdata[i] = val{mdata[i].key, i}
 					}
 
-					gdata := make([]interface{}, len(mdata))
+					gdata := make([]val, len(mdata))
 					copy(gdata, mdata)
 
 					Sort(mdata, KeyLessThan)
