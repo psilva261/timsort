@@ -2,3 +2,4 @@
 *.swp
 coverage.txt
 
+*bench*.txt
